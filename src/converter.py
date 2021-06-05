@@ -8,9 +8,7 @@ class Converter:
         self.changes = 0
         self.generateComponents = False
 
-        # @var \Awssat\Tailwindo\Framework\Framework */
         self.framework = None
-        # @var string|null */
         self.prefix = ""
 
         if content:
@@ -28,20 +26,16 @@ class Converter:
 
         return self
 
-    def getFramework(self):  # \Awssat\Tailwindo\Framework\Framework
+    def getFramework(self):  
         return self.framework
 
-    #
-    # * Is the given content a CSS content or HTML content.
-    # */
     def classesOnly(self, value: bool):
+        """Is the given content a CSS content or HTML content."""
         self.isCssClassesOnly = value
         return self
 
-    #
-    # * Is the given content a CSS content or HTML content.
-    # */
     def setGenerateComponents(value: bool):
+        """Is the given content a CSS content or HTML content."""
         self.generateComponents = value
         return self
 
@@ -65,9 +59,6 @@ class Converter:
 
     # TODO
     def convert(self):
-        # foreach (self.getFramework()->get() as $item)
-        #   foreach ($item as $search => $replace)
-        # item should return functions btstrp.grid() ...
         for item in self.getFramework().get():
             for search, replace in item.items():
                 self.searchAndReplace(search, replace)
@@ -79,7 +70,6 @@ class Converter:
         if getComponents:
             return self.getComponents()
 
-        # regex replace TODO
         self.givenContent = re.sub(r"\{tailwindo\|([^\}]+)\}", "\1", self.givenContent)
 
         return self.givenContent
@@ -94,23 +84,19 @@ class Converter:
             if selector == classes:
                 continue
 
-            # ???
+            # impove??
             result += "".join([".", selector, "{\n\t@apply ", classes, ";\n}\n"])
 
         return result
 
-    #
-    # Get the number of committed changes.
-    #
+    
     def changes(self) -> int:
+        """Get the number of committed changes."""
         return self.changes
 
     #
     # * search for a word in the last searches.
     # */
-    def strpos(self):
-        pass
-
     # @protected
     def isInLastSearches(self, searchFor: str, limit: int = 0) -> bool:
         for i, search in enumerate(self.lastSearches):
@@ -202,8 +188,7 @@ class Converter:
             fr"{regexStart}(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d])){regexEnd}",
             self.givenContent,
         )
-        if not matches:
-            return
+        if not matches: return
 
         def evaluator(match):
 
@@ -213,28 +198,28 @@ class Converter:
                 lambda m: match[f"regex_{m[1]}_{m[2]}"],
                 replace,
             )
-            # if self.generateComponents and match["given"] not in self.components:
-            #     self.components[match["given"]] = re.sub(
-            #         "\{tailwindo\|([^\}]+)\}", "\1", replace
-            #     )
+            if self.generateComponents and match["given"] not in self.components:
+                self.components[match["given"]] = re.sub(
+                    "\{tailwindo\|([^\}]+)\}", "\1", replace
+                )
 
-            # def fn(css_class):
-            #     responsiveOrStatePrefix = css_class[:css_class.index(":")]
-            #     if responsiveOrStatePrefix:
-            #         utilityName = css_class.replace(responsiveOrStatePrefix + ":", "")
-            #         return f"{responsiveOrStatePrefix}:{self.prefix}{utilityName}"
-            #     elif css_class:
-            #         return f"{self.prefix}{css_class}"
-            #     return css_class
+            def fn(css_class):
+                responsiveOrStatePrefix = css_class[:css_class.index(":")]
+                if responsiveOrStatePrefix:
+                    utilityName = css_class.replace(responsiveOrStatePrefix + ":", "")
+                    return f"{responsiveOrStatePrefix}:{self.prefix}{utilityName}"
+                elif css_class:
+                    return f"{self.prefix}{css_class}"
+                return css_class
 
-            # if self.prefix:
-            #     arr = replace.split()
-            #     arr = map(fn, arr)
-            #     # remove all nil items
-            #     arr = list(lambda x: x, arr)  # array_filter(arr)
+            if self.prefix:
+                arr = replace.split()
+                arr = map(fn, arr)
+                # remove all nil items
+                arr = list(lambda x: x, arr)  # array_filter(arr)
 
-            #     print(arr)
-            #     return r' '.join(arr).strip()
+                print(arr)
+                return r' '.join(arr).strip()
 
             return _replace
 
@@ -244,7 +229,7 @@ class Converter:
                 evaluator,
                 match[0],
             )
-            #print("result", result)
+            print("result", result)
 
             if match[0] != result:
                 count = len(re.findall(r"\{tailwindo\|.*?\}", result))
