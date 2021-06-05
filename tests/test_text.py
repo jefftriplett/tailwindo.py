@@ -7,7 +7,7 @@ class TestText(unittest.TestCase):
         self.converter = Converter().setFramework('bootstrap')
 
     def test_converts_text_with_breakpoint(self):
-        self.assertEquals(
+        self.assertEqual(
             'sm:text-left',
             self.converter
             .classesOnly(True)
@@ -15,7 +15,7 @@ class TestText(unittest.TestCase):
             .convert()
             .get()
             )
-        self.assertEquals(
+        self.assertEqual(
             'lg:text-justify',
              self.converter
             .classesOnly(True)

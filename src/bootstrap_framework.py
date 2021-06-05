@@ -50,10 +50,6 @@ class BootstrapFramework:
             "muted": "gray-700",
         }
 
-    def reveal(self):
-        """ Test Func """
-        print(self.__hidden)
-        return self.__hidden + 1
 
     def framework_name(self) -> str:
         return "Bootstrap"
@@ -100,22 +96,22 @@ class BootstrapFramework:
             self.flexElements(),
             self.spacing(),
             self.text(),
-            self.floats(),
-            self.positioning(),
-            self.visibility(),
-            self.alerts(),
-            self.verticalAlignment(),
-            self.badges(),
-            self.breadcrumb(),
-            self.buttons(),
-            self.cards(),
-            self.dropdowns(),
-            self.forms(),
-            self.inputGroups(),
-            self.listGroups(),
-            self.modals(),
-            self.navs(),
-            self.pagination(),
+            #self.floats(),
+            #self.positioning(),
+            #self.visibility(),
+            #self.alerts(),
+            #self.verticalAlignment(),
+            #self.badges(),
+            #self.breadcrumb(),
+            #self.buttons(),
+            #self.cards(),
+            #self.dropdowns(),
+            #self.forms(),
+            #self.inputGroups(),
+            #self.listGroups(),
+            #self.modals(),
+            #self.navs(),
+            #self.pagination(),
         ]:
             yield component
 

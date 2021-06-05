@@ -1,20 +1,6 @@
 import re
 from .bootstrap_framework import BootstrapFramework
 
-# givencontent = ""
-# iscssclassesonly = false
-# changes = 0
-# lastsearches = []
-# generatecomponents = false
-# components = []
-
-# # @var \awssat\tailwindo\framework\framework */
-# framework = none
-# # @var string|null */
-# prefix = none
-
-# def __construct(str: content=None):
-
 
 class Converter:
     def __init__(self, content=""):
@@ -37,10 +23,8 @@ class Converter:
         return self
 
     def setFramework(self, framework: str):
-        framework = "BootstrapFramework"
-        # 'Awssat\\Tailwindo\\Framework\\'.ucfirst($framework).'Framework';
-
-        self.framework = BootstrapFramework()
+        if framework.lower() == "bootstrap":
+            self.framework = BootstrapFramework()
 
         return self
 
@@ -168,26 +152,24 @@ class Converter:
     # */
     # @protected
     def searchAndReplace(self, search, replace) -> None:
-        # if ($replace instanceof \Closure) {
-        #     $callableReplace = \Closure::bind($replace, self, self::class);
-        #     $replace = $callableReplace();
-        # }
+        # if ($replace instanceof \Closure):
+        #     callableReplace = \Closure::bind($replace, self, self::class)
+        #     replace = callableReplace()
 
-        # "(?<start>class(?:Name)?\s*=\s*(?<quotation>[\"'])((?!\k<quotation>).)*)"
         regexStart = (
-            "(?P<start>class(?:Name)?\s*=\s*(?P<quotation>[\"'])((?!(?P=quotation)).)*)"
+            r"(?P<start>class(?:Name)?\s*=\s*(?P<quotation>[\"'])((?!(?P=quotation)).)*)"
             if not self.isCssClassesOnly
-            else "(?P<start>\s*)"
+            else r"(?P<start>\s*)"
         )
         # "(?<end>((?!\k<quotation>).)*\k<quotation>)"
         regexEnd = (
-            "(?P<end>((?!(?P=quotation)).)*(?P=quotation))"
+            r"(?P<end>((?!(?P=quotation)).)*(?P=quotation))"
             if not self.isCssClassesOnly
-            else "(?P<end>\s*)"
+            else r"(?P<end>\s*)"
         )
 
         # TODO
-        # search = preg_quote(search)
+        # search = preg_quote(search) #.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
 
         currentSubstitute = 0
 
@@ -197,14 +179,14 @@ class Converter:
             if "{regex_string}" in search or "{regex_number}" in search:
                 currentSubstitute += 1
                 # for regeName, regexValue in ['regex_string'=> '[a-zA-Z0-9]+', 'regex_number' => '[0-9]+']:
-                for regeName, regexValue in [
-                    ("{regex_string}", "[a-zA-Z0-9]+"),
-                    ("{regex_number}", "[0-9]+"),
-                ]:
-                    #regexMatchCount = len(re.findall(fr"\\\\?\{{{regeName}\\\\?\}}", search))
+                for regeName, regexValue in {
+                    "{regex_string}": "[a-zA-Z0-9]+",
+                    "{regex_number}": "[0-9]+",
+                    }.items():
+                    regexMatchCount = len(re.findall(fr"\\\\?\{{{regeName}\\\\?\}}", search))
                     search = re.sub(
                         fr"\\\\?\{{{regeName}\\\\?\}}",
-                        f"(?<{regeName}_{currentSubstitute}>{regexValue})",
+                        f"(?P<{regeName}_{currentSubstitute}>{regexValue})",
                         search,
                         count=1,
                     )
@@ -212,49 +194,49 @@ class Converter:
                         fr"\\\\?\{{{regeName}\\\\?\}}",
                         f"{{{regeName}_{currentSubstitute}}}",
                         replace,
-                        #count=(1 if regexMatchCount > 1 else 0),
+                        count=(1 if regexMatchCount > 1 else 0),
                     )
-                continue
             break
 
-        # if (!preg_match_all('/'.$regexStart.'(?<given>(?<![\-_.\w\d])'.$search.'(?![\-_.\w\d]))'.$regexEnd.'/i', self.givenContent, $matches, PREG_SET_ORDER)) { return; }
-        matches = re.findall(
+        matches = re.finditer(
             fr"{regexStart}(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d])){regexEnd}",
             self.givenContent,
         )
-        print(matches)
         if not matches:
             return
 
         def evaluator(match):
-            replace = re.sub(
+
+            #print(match)
+            _replace = re.sub(
                 "\{regex_(string|number)_(\d+)\}",
-                lambda m: m[f"regex_{m[1]}_{m[2]}"],
+                lambda m: match[f"regex_{m[1]}_{m[2]}"],
                 replace,
             )
-            if self.generateComponents and match["given"] not in self.components:
-                self.components[match["given"]] = re.sub(
-                    "\{tailwindo\|([^\}]+)\}", "\1", replace
-                )
+            # if self.generateComponents and match["given"] not in self.components:
+            #     self.components[match["given"]] = re.sub(
+            #         "\{tailwindo\|([^\}]+)\}", "\1", replace
+            #     )
 
-            def fn(css_class):
-                responsiveOrStatePrefix = css_class[: css_class.index(":")]
-                if responsiveOrStatePrefix:
-                    utilityName = css_class.replace(responsiveOrStatePrefix + ":", "")
-                    return f"{responsiveOrStatePrefix}:{self.prefix}{utilityName}"
-                elif css_class:
-                    return f"{self.prefix}{css_class}"
-                return css_class
+            # def fn(css_class):
+            #     responsiveOrStatePrefix = css_class[:css_class.index(":")]
+            #     if responsiveOrStatePrefix:
+            #         utilityName = css_class.replace(responsiveOrStatePrefix + ":", "")
+            #         return f"{responsiveOrStatePrefix}:{self.prefix}{utilityName}"
+            #     elif css_class:
+            #         return f"{self.prefix}{css_class}"
+            #     return css_class
 
-            if self.prefix:
-                arr = replace.split()
-                arr = map(fn, arr)
-                # remove all nil items
-                arr = list(lambda x: x, arr)  # array_filter(arr)
+            # if self.prefix:
+            #     arr = replace.split()
+            #     arr = map(fn, arr)
+            #     # remove all nil items
+            #     arr = list(lambda x: x, arr)  # array_filter(arr)
 
-                return " ".join(arr).strip()
+            #     print(arr)
+            #     return r' '.join(arr).strip()
 
-            return replace
+            return _replace
 
         for match in matches:
             result = re.sub(
@@ -262,9 +244,10 @@ class Converter:
                 evaluator,
                 match[0],
             )
+            #print("result", result)
 
             if match[0] != result:
-                count = re.findall(r"\{tailwindo\|.*?\}", result)
+                count = len(re.findall(r"\{tailwindo\|.*?\}", result))
                 if count and count > 1:
                     result = re.sub(r"\{tailwindo\|.*?\}", "", result, count - 1)
 
