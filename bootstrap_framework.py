@@ -1,6 +1,9 @@
 from typing import Dict
 from collections import defaultdict
 
+### XXX TEMP XXX
+regex_string = r'[a-zA-Z0-9]+'
+regex_number = r'[0-9]+'
 
 class BootstrapFramework:
     def __init__(self):
@@ -89,32 +92,32 @@ class BootstrapFramework:
     #
     def get(self):  # ?\Generator
         for component in [
-            "general",
-            "grid",
-            "borders",
-            "mediaObject",
-            "colors",
-            "display",
-            "sizing",
-            "flexElements",
-            "spacing",
-            "text",
-            "floats",
-            "positioning",
-            "visibility",
-            "alerts",
-            "verticalAlignment",
-            "badges",
-            "breadcrumb",
-            "buttons",
-            "cards",
-            "dropdowns",
-            "forms",
-            "inputGroups",
-            "listGroups",
-            "modals",
-            "navs",
-            "pagination",
+            self.general(),
+            self.grid(),
+            self.borders(),
+            self.mediaObject(),
+            self.colors(),
+            self.display(),
+            self.sizing(),
+            self.flexElements(),
+            self.spacing(),
+            self.text(),
+            self.floats(),
+            self.positioning(),
+            self.visibility(),
+            self.alerts(),
+            self.verticalAlignment(),
+            self.badges(),
+            self.breadcrumb(),
+            self.buttons(),
+            self.cards(),
+            self.dropdowns(),
+            self.forms(),
+            self.inputGroups(),
+            self.listGroups(),
+            self.modals(),
+            self.navs(),
+            self.pagination(),
         ]:
             yield component
 
@@ -174,13 +177,13 @@ class BootstrapFramework:
         #     }
 
         # items = []
-        # foreach (mainClasses as btClass => twClass) {
+        # for (mainClasses as btClass => twClass) {
         #     items[btClass] = twClass;
         # }
 
-        # foreach (mainClassesEachScreen as btClass => twClass) {
-        #     foreach (self.mediaOptions as btMedia => twMedia) {
-        #         items[str_replace('{screen}', btMedia, btClass)] = str_replace('{screen}', twMedia, twClass);
+        # for (mainClassesEachScreen as btClass => twClass) {
+        #     for (self.mediaOptions as btMedia => twMedia) {
+        #         items[btClass.replace('{screen}', btMedia)] = twClass.replace('{screen}', twMedia)
         #     }
         # }
 
@@ -238,7 +241,7 @@ class BootstrapFramework:
             items[f"border-{btSide}"] = f"border-{twSide}"
             items[f"border-{btSide}-0"] = f"border-{twSide}-0"
 
-        for btColor, twColor in self.color.items():
+        for btColor, twColor in self.__colors.items():
             items[f"border-{btColor}"] = f"border-{twColor}"
 
         style = {
@@ -291,47 +294,39 @@ class BootstrapFramework:
         return items
 
     # TODO
-    # def flexElements() -> Dict:
-    #     items = defaultdict(str)
+    def flexElements(self) -> Dict:
+        items = defaultdict(str)
 
-    #     self.mediaOptions[""] = ""
-    #     for self.mediaOptions  as btMedia => twMedia) {
-    #         foreach (['row', 'row-reverse', 'column', 'column-reverse'] as key) {
-    #             items['flex'.(empty(btMedia) ? '' : '-').btMedia.'-'.key] = (empty(twMedia) ? '' : twMedia.':').'flex-'.str_replace('column', 'col', key);
-    #         }
+        self.__mediaOptions[""] = ""
+        for btMedia, twMedia in self.__mediaOptions.items():
+            for key in ['row', 'row-reverse', 'column', 'column-reverse']:
+                items['flex'+('' if not btMedia else '-')+btMedia+'-'+key] = ('' if not twMedia else twMedia+':')+'flex-'+key.replace('column', 'col')
 
-    #         foreach (['grow-0', 'grow-1', 'shrink-0', 'shrink-1'] as key) {
-    #             items['flex'.(empty(btMedia) ? '' : '-').btMedia.'-'.key] = (empty(twMedia) ? '' : twMedia.':').'flex-'.str_replace('-1', '', key);
-    #         }
+            for key in ['grow-0', 'grow-1', 'shrink-0', 'shrink-1']:
+                items['flex'+('' if not btMedia else '-')+btMedia+'-'+key] = ('' if not twMedia else twMedia+':')+'flex-'+key.replace('-1', '')
 
-    #         foreach (['start', 'end', 'center', 'between', 'around'] as key) {
-    #             items['justify-content'.(empty(btMedia) ? '' : '-').btMedia.'-'.key] = (empty(twMedia) ? '' : twMedia.':').'justify-'.key;
-    #         }
+            for key in ['start', 'end', 'center', 'between', 'around']:
+                items['justify-content'+('' if not btMedia else '-')+btMedia+'-'+key] = ('' if not twMedia else twMedia+':')+'justify-'+key;
 
-    #         foreach (['start', 'end', 'center', 'stretch', 'baseline'] as key) {
-    #             items['align-items'.(empty(btMedia) ? '' : '-').btMedia.'-'.key] = (empty(twMedia) ? '' : twMedia.':').'items-'.key;
-    #         }
+            for key in ['start', 'end', 'center', 'stretch', 'baseline']:
+                items['align-items'+('' if not btMedia else '-')+btMedia+'-'+key] = ('' if not twMedia else twMedia+':')+'items-'+key;
 
-    #         foreach (['start', 'end', 'center', 'stretch', 'baseline'] as key) {
-    #             items['align-content'.(empty(btMedia) ? '' : '-').btMedia.'-'.key] = (empty(twMedia) ? '' : twMedia.':').'content-'.key;
-    #         }
+            for key in ['start', 'end', 'center', 'stretch', 'baseline']:
+                items['align-content'+('' if not btMedia else '-')+btMedia+'-'+key] = ('' if not twMedia else twMedia+':')+'content-'+key;
 
-    #         foreach (['start', 'end', 'center', 'stretch', 'baseline'] as key) {
-    #             items['align-self'.(empty(btMedia) ? '' : '-').btMedia.'-'.key] = (empty(twMedia) ? '' : twMedia.':').'self-'.key;
-    #         }
+            for key in ['start', 'end', 'center', 'stretch', 'baseline']:
+                items['align-self'+('' if not btMedia else '-')+btMedia+'-'+key] = ('' if not twMedia else twMedia+':')+'self-'+key;
 
-    #         items['flex'.(empty(btMedia) ? '' : '-').btMedia.'-wrap'] = (empty(twMedia) ? '' : twMedia.':').'flex-wrap';
-    #         items['flex'.(empty(btMedia) ? '' : '-').btMedia.'-wrap-reverse'] = (empty(twMedia) ? '' : twMedia.':').'flex-wrap-reverse';
-    #         items['flex'.(empty(btMedia) ? '' : '-').btMedia.'-nowrap'] = (empty(twMedia) ? '' : twMedia.':').'flex-no-wrap';
+            items['flex'+('' if not btMedia else '-')+btMedia+'-wrap'] = ('' if not twMedia else twMedia+':')+'flex-wrap';
+            items['flex'+('' if not btMedia else '-')+btMedia+'-wrap-reverse'] = ('' if not twMedia else twMedia+':')+'flex-wrap-reverse';
+            items['flex'+('' if not btMedia else '-')+btMedia+'-nowrap'] = ('' if not twMedia else twMedia+':')+'flex-no-wrap';
 
-    #         items['flex'.(empty(btMedia) ? '' : '-').btMedia.'-nowrap'] = (empty(twMedia) ? '' : twMedia.':').'flex-no-wrap';
+            items['flex'+('' if not btMedia else '-')+btMedia+'-nowrap'] = ('' if not twMedia else twMedia+':')+'flex-no-wrap';
 
-    #         if (btMedia != '') {
-    #             items['order-'.btMedia.'-{regex_number}'] = twMedia.':order-{regex_number}';
-    #         }
-    #     }
+            if btMedia != '':
+                items['order-'+btMedia+'-{regex_number}'] = twMedia+':order-{regex_number}'
 
-    #     return items
+        return items
 
     def sizing(self):
         items = {
@@ -352,28 +347,23 @@ class BootstrapFramework:
                 items[f"h-{btClass}"] = f"h-{twClass}"
         return items
 
-    # def spacing():
-    #     items = [];
-    #     spacingProperties = ['p', 'm'];
+    def spacing(self):
+        items = defaultdict(str)
+        spacingProperties = ['p', 'm']
 
-    #     foreach (spacingProperties as property) {
-    #         foreach (self.spacings as btSpacing => twSpacing) {
-    #             items[property.'-'.btSpacing] = property.'-'.twSpacing;
-    #         }
-    #     }
+        for prop in spacingProperties:
+            for btSpacing, twSpacing in self.__spacings.items():
+                items[f"{prop}-{btSpacing}"] = f'{prop}-{twSpacing}'
 
-    #     foreach (spacingProperties as property) {
-    #         foreach (self.mediaOptions as btMedia => twMedia) {
-    #             foreach (self.spacings as btSpacing => twSpacing) {
-    #                 items[property.'-'.btMedia.'-'.btSpacing] = twMedia.':'.property.'-'.twSpacing;
-    #                 items[property.'{regex_string}-'.btMedia.'-'.btSpacing] = twMedia.':'.property.'{regex_string}-'.twSpacing;
-    #             }
+        for prop in spacingProperties:
+            for btMedia, twMedia in self.__mediaOptions.items():
+                for btSpacing, twSpacing in self.__spacings.items():
+                    items[f'{property}-{btMedia}-{btSpacing}'] = f'{twMedia}:{property}-{twSpacing}'
+                    items[f'{prop}{regex_string}-{btMedia}-{btSpacing}'] = f'{twMedia}:{prop}{regex_string}-{twSpacing}'
 
-    #             items[property.'{regex_string}-'.btMedia.'-auto'] = twMedia.':'.property.'{regex_string}-auto';
-    #         }
-    #     }
+                items[f'{prop}{regex_string}-{btMedia}-auto'] = f'{twMedia}:{property}{regex_string}-auto'
 
-    #     return items
+        return items
 
     def floats(self):
         items = defaultdict(str)
@@ -436,11 +426,11 @@ class BootstrapFramework:
 
     def verticalAlignment(self):
         # same bt <> tw
-        return []
+        return defaultdict()
 
     def visibility(self):
         # same
-        return []
+        return defaultdict()
 
     def alerts(self):
         items = {
@@ -505,7 +495,7 @@ class BootstrapFramework:
             "btn-block": "block w-full",
         }
 
-        # foreach ([
+        # for ([
         #     'sm' => '{tailwindo|py-1 px-2 leading-tight} text-xs ',
         #     'lg' => '{tailwindo|py-3 px-4 leading-tight} text-xl',
         # ] as btMedia => twClasses) {
@@ -528,7 +518,7 @@ class BootstrapFramework:
         #     items[f'btn-{btColor}'] = twColor # TODO XXX Below XXX
         #     items[f'btn-outline-{btColor}'] = preg_replace_callback('/(?<!hover:)(text-[^\s]+|bg-[^\s]+)/i', function (m) {
         #         if (strpos(m[1], 'bg-') !== false) {
-        #             color = str_replace('bg-', '', m[1]);
+        #             color = m[1].replace('bg-', '')
 
         #             return 'text-'.color.' border-'.color.' hover:bg-'.color.' hover:text-white';
         #         } else {
@@ -540,7 +530,7 @@ class BootstrapFramework:
         return items
 
     # ???  TODO?
-    def isInLastSearches(thing, idx):
+    def isInLastSearches(self, thing, idx):
         return
 
     def cards(self):
@@ -624,7 +614,7 @@ class BootstrapFramework:
         }
 
         # TODO
-        for btColor, twColor in self.__colors:
+        for btColor, twColor in self.__colors.items():
             if btColor == "dark":
                 items[f"list-group-item-{btColor}"] = "text-white bg-gray-700"
             elif btColor == "light":
@@ -638,7 +628,7 @@ class BootstrapFramework:
 
     def modals(self):
         # TODO
-        return []
+        return defaultdict()
 
     def navs(self):
         items = {
