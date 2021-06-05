@@ -1,21 +1,22 @@
 import re
-from bootstrap_framework import BootstrapFramework
+from .bootstrap_framework import BootstrapFramework
+
+# givencontent = ""
+# iscssclassesonly = false
+# changes = 0
+# lastsearches = []
+# generatecomponents = false
+# components = []
+
+# # @var \awssat\tailwindo\framework\framework */
+# framework = none
+# # @var string|null */
+# prefix = none
+
+# def __construct(str: content=None):
 
 
 class Converter:
-    # givencontent = ""
-    # iscssclassesonly = false
-    # changes = 0
-    # lastsearches = []
-    # generatecomponents = false
-    # components = []
-
-    # # @var \awssat\tailwindo\framework\framework */
-    # framework = none
-    # # @var string|null */
-    # prefix = none
-
-    # def __construct(str: content=None):
     def __init__(self, content=""):
         self.isCssClassesOnly = False
         self.changes = 0
@@ -24,7 +25,7 @@ class Converter:
         # @var \Awssat\Tailwindo\Framework\Framework */
         self.framework = None
         # @var string|null */
-        self.prefix = None
+        self.prefix = ""
 
         if content:
             self.setContent(content)
@@ -49,7 +50,6 @@ class Converter:
     #
     # * Is the given content a CSS content or HTML content.
     # */
-
     def classesOnly(self, value: bool):
         self.isCssClassesOnly = value
         return self
@@ -62,7 +62,10 @@ class Converter:
         return self
 
     #
-    # * The prefix option allows you to add a custom prefix to all of Tailwind's generated utility classes. This can be really useful when layering Tailwind on top of existing CSS where there might be naming conflicts.
+    # * The prefix option allows you to add a custom prefix to all of
+    # Tailwind's generated utility classes. This can be really useful when
+    # layering Tailwind on top of existing CSS where there might be naming
+    # conflicts.
     # *
     # * @param string $prefix
     # *
@@ -130,7 +133,7 @@ class Converter:
             # strpos?
             # if not self.strpos(search, searchFor):
             #    return True
-            if search in searchFor:
+            if searchFor in search:
                 return True
             if i >= limit and limit > 0:
                 return False
@@ -170,15 +173,17 @@ class Converter:
         #     $replace = $callableReplace();
         # }
 
+        # "(?<start>class(?:Name)?\s*=\s*(?<quotation>[\"'])((?!\k<quotation>).)*)"
         regexStart = (
-            "(?<start>class(?:Name)?\s*=\s*(?<quotation>[\"'])((?!\k<quotation>).)*)"
+            "(?P<start>class(?:Name)?\s*=\s*(?P<quotation>[\"'])((?!(?P=quotation)).)*)"
             if not self.isCssClassesOnly
-            else "(?<start>\s*)"
+            else "(?P<start>\s*)"
         )
+        # "(?<end>((?!\k<quotation>).)*\k<quotation>)"
         regexEnd = (
-            "(?<end>((?!\k<quotation>).)*\k<quotation>)"
+            "(?P<end>((?!(?P=quotation)).)*(?P=quotation))"
             if not self.isCssClassesOnly
-            else "(?<end>\s*)"
+            else "(?P<end>\s*)"
         )
 
         # TODO
@@ -186,68 +191,75 @@ class Converter:
 
         currentSubstitute = 0
 
+        # TODO
         while True:
             # if (strpos($search, '\{regex_string\}') !== false || strpos($search, '\{regex_number\}') !== false) {
-            if search in "{regex_string}" or search in "{regex_number}":
+            if "{regex_string}" in search or "{regex_number}" in search:
                 currentSubstitute += 1
                 # for regeName, regexValue in ['regex_string'=> '[a-zA-Z0-9]+', 'regex_number' => '[0-9]+']:
-                for regeName, regexValue in ("[a-zA-Z0-9]+", "[0-9]+"):
-                    regexMatchCount = re.findall(fr"\\\\?\{{{regeName}\\\\?\}}", search)
+                for regeName, regexValue in [
+                    ("{regex_string}", "[a-zA-Z0-9]+"),
+                    ("{regex_number}", "[0-9]+"),
+                ]:
+                    #regexMatchCount = len(re.findall(fr"\\\\?\{{{regeName}\\\\?\}}", search))
                     search = re.sub(
                         fr"\\\\?\{{{regeName}\\\\?\}}",
                         f"(?<{regeName}_{currentSubstitute}>{regexValue})",
                         search,
-                        1,
+                        count=1,
                     )
                     replace = re.sub(
                         fr"\\\\?\{{{regeName}\\\\?\}}",
-                        f"${{{regeName}_{currentSubstitute}}}",
+                        f"{{{regeName}_{currentSubstitute}}}",
                         replace,
-                        (1 if regexMatchCount > 1 else -1),
+                        #count=(1 if regexMatchCount > 1 else 0),
                     )
                 continue
             break
 
         # if (!preg_match_all('/'.$regexStart.'(?<given>(?<![\-_.\w\d])'.$search.'(?![\-_.\w\d]))'.$regexEnd.'/i', self.givenContent, $matches, PREG_SET_ORDER)) { return; }
         matches = re.findall(
-            fr"{regexStart}(?<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d])){regexEnd}i",
+            fr"{regexStart}(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d])){regexEnd}",
             self.givenContent,
         )
+        print(matches)
         if not matches:
             return
 
-        # def evaluator(match):
-        #     replace = re.sub('/\$\{regex_(string|number)_(\d+)\}/',
-        #             lambda m : match[f"regex_{m[1]}_{$m[2]}"],
-        #             replace)
-        #     if self.generateComponents and match["given"] not in self.components:
-        #         self.components[match['given']] = re.sub('/\{tailwindo\|([^\}]+)\}/', '\1', replace)
+        def evaluator(match):
+            replace = re.sub(
+                "\{regex_(string|number)_(\d+)\}",
+                lambda m: m[f"regex_{m[1]}_{m[2]}"],
+                replace,
+            )
+            if self.generateComponents and match["given"] not in self.components:
+                self.components[match["given"]] = re.sub(
+                    "\{tailwindo\|([^\}]+)\}", "\1", replace
+                )
 
-        #     if self.prefix:
-        #         arr = replace.split()
-        #         arr = array_map(
-        #                 function (css_class) {
-        #             responsiveOrStatePrefix = substr(css_class, 0, css_class.index(':'))
-        #             if responsiveOrStatePrefix:
-        #                 utilityName = str_replace($responsiveOrStatePrefix.':', '', css_class)
+            def fn(css_class):
+                responsiveOrStatePrefix = css_class[: css_class.index(":")]
+                if responsiveOrStatePrefix:
+                    utilityName = css_class.replace(responsiveOrStatePrefix + ":", "")
+                    return f"{responsiveOrStatePrefix}:{self.prefix}{utilityName}"
+                elif css_class:
+                    return f"{self.prefix}{css_class}"
+                return css_class
 
-        #                 return f"{responsiveOrStatePrefix}:{self.prefix}{utilityName}"
-        #              elif css_class:
-        #                 return f"{self.prefix}{css_class}"
+            if self.prefix:
+                arr = replace.split()
+                arr = map(fn, arr)
+                # remove all nil items
+                arr = list(lambda x: x, arr)  # array_filter(arr)
 
-        #             return css_class
-        #         }, arr);
-        #         # remove all nil items
-        #         arr = list(lambda x: x, arr)  #array_filter(arr)
+                return " ".join(arr).strip()
 
-        #         return " ".join(arr).strip()
-
-        #     return replace
+            return replace
 
         for match in matches:
             result = re.sub(
-                fr"(?<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d]))",
-                #       evaluator,
+                fr"(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d]))",
+                evaluator,
                 match[0],
             )
 

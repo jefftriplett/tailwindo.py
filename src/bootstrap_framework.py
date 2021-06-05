@@ -2,8 +2,6 @@ from typing import Dict
 from collections import defaultdict
 
 ### XXX TEMP XXX
-regex_string = r'[a-zA-Z0-9]+'
-regex_number = r'[0-9]+'
 
 class BootstrapFramework:
     def __init__(self):
@@ -359,9 +357,9 @@ class BootstrapFramework:
             for btMedia, twMedia in self.__mediaOptions.items():
                 for btSpacing, twSpacing in self.__spacings.items():
                     items[f'{property}-{btMedia}-{btSpacing}'] = f'{twMedia}:{property}-{twSpacing}'
-                    items[f'{prop}{regex_string}-{btMedia}-{btSpacing}'] = f'{twMedia}:{prop}{regex_string}-{twSpacing}'
+                    items[f'{prop}{{regex_string}}-{btMedia}-{btSpacing}'] = f'{twMedia}:{prop}{{regex_string}}-{twSpacing}'
 
-                items[f'{prop}{regex_string}-{btMedia}-auto'] = f'{twMedia}:{property}{regex_string}-auto'
+                items[f'{prop}{{regex_string}}-{btMedia}-auto'] = f'{twMedia}:{property}{{regex_string}}-auto'
 
         return items
 
