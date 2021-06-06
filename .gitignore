@@ -1,4 +1,4 @@
-.swp
+*.swp
 ref
 *.php
 __pycache__
