@@ -26,7 +26,7 @@ class Converter:
 
         return self
 
-    def getFramework(self):  
+    def getFramework(self):
         return self.framework
 
     def classesOnly(self, value: bool):
@@ -89,7 +89,7 @@ class Converter:
 
         return result
 
-    
+
     def changes(self) -> int:
         """Get the number of committed changes."""
         return self.changes
@@ -130,6 +130,24 @@ class Converter:
             # array_shift(self.lastSearches)
             self.lastSearches.pop(0)
 
+    def replace_callback(pattern, callback, subject, limit=-1):
+        rs, res, x, ret = None, [], 0, subject
+        if limit == -1:
+            tmp = []
+            # while tmp and flag.index('g') != -1:
+            # findall ??
+            tmp = re.findall(subject, pattern)
+            if tmp:
+                res.append(tmp)
+        else:
+            # findall ??
+            res.append(re.findall(subject, pattern))
+        for r in reversed(res):
+            ## REPLACE
+            ret = ret.replace(r[0], callback(r))
+        return ret
+
+
     #
     # * Search the given content and replace.
     # *
@@ -154,9 +172,8 @@ class Converter:
             else r"(?P<end>\s*)"
         )
 
-        # TODO
-        # search = preg_quote(search) #.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-
+        # TODO OK?
+        #search = re.escape(search) 
         currentSubstitute = 0
 
         # TODO
@@ -184,7 +201,7 @@ class Converter:
                     )
             break
 
-        matches = re.finditer(
+        matches = re.search(
             fr"{regexStart}(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d])){regexEnd}",
             self.givenContent,
         )
@@ -223,18 +240,17 @@ class Converter:
 
             return _replace
 
-        for match in matches:
+        for match in matches.groups():
             result = re.sub(
                 fr"(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d]))",
                 evaluator,
-                match[0],
+                matches[0],
             )
-            print("result", result)
 
-            if match[0] != result:
+            if matches[0] != result:
                 count = len(re.findall(r"\{tailwindo\|.*?\}", result))
                 if count and count > 1:
                     result = re.sub(r"\{tailwindo\|.*?\}", "", result, count - 1)
 
-                self.givenContent = self.givenContent.replace(match[0], result)
+                self.givenContent = self.givenContent.replace(matches[0], result)
                 self.addToLastSearches(search)

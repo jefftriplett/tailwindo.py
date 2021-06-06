@@ -1,4 +1,3 @@
-from typing import Dict
 from collections import defaultdict
 
 ### XXX TEMP XXX
@@ -67,7 +66,7 @@ class BootstrapFramework:
      * This is the default css classes to be added to your main css file for compatibility.
     """
 
-    def defaultCSS(self) -> Dict:
+    def defaultCSS(self) -> dict:
 
         return {
             # https://getbootstrap.com/docs/4.4/content/reboot/
@@ -115,7 +114,7 @@ class BootstrapFramework:
         ]:
             yield component
 
-    def general(self) -> Dict:
+    def general(self) -> dict:
         mainClasses = {
             "container-fluid": "container max-w-full mx-auto sm:px-4",
             "container": "container mx-auto sm:px-4",
@@ -185,7 +184,7 @@ class BootstrapFramework:
         return mainClasses
 
     # TODO
-    def grid(self) -> Dict:
+    def grid(self) -> dict:
         items = {
             "row": "flex flex-wrap ",
             "col": "relative flex-grow max-w-full flex-1 px-4",
@@ -215,14 +214,14 @@ class BootstrapFramework:
                 items["offset-" + btMedia + "-" + btElem] = twMedia + ":mx-" + twElem
         return items
 
-    def mediaObject(self) -> Dict:
+    def mediaObject(self) -> dict:
         # http://getbootstrap.com/docs/4.0/layout/media-object/
         return {
             "media": "flex items-start",
             "media-body": "flex-1",
         }
 
-    def borders(self) -> Dict:
+    def borders(self) -> dict:
         items = defaultdict(str)
 
         side = {
@@ -252,7 +251,7 @@ class BootstrapFramework:
 
         return items
 
-    def colors(self) -> Dict:
+    def colors(self) -> dict:
         items = defaultdict(str)
 
         for btColor, twColor in self.__colors.items():
@@ -263,7 +262,7 @@ class BootstrapFramework:
 
         return items
 
-    def display(self) -> Dict:
+    def display(self) -> dict:
         # .d-none
         # .d-{sm,md,lg,xl}-none
         items = defaultdict(str)
@@ -288,7 +287,7 @@ class BootstrapFramework:
         return items
 
     # TODO
-    def flexElements(self) -> Dict:
+    def flexElements(self) -> dict:
         items = defaultdict(str)
 
         self.__mediaOptions[""] = ""
