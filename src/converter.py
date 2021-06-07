@@ -1,5 +1,5 @@
 import re
-from .bootstrap_framework import BootstrapFramework
+from bootstrap_framework import BootstrapFramework
 
 
 class Converter:
@@ -34,7 +34,7 @@ class Converter:
         self.isCssClassesOnly = value
         return self
 
-    def setGenerateComponents(value: bool):
+    def setGenerateComponents(self, value: bool):
         """Is the given content a CSS content or HTML content."""
         self.generateComponents = value
         return self
@@ -57,7 +57,6 @@ class Converter:
 
         return self
 
-    # TODO
     def convert(self):
         for item in self.getFramework().get():
             for search, replace in item.items():
@@ -130,25 +129,8 @@ class Converter:
             # array_shift(self.lastSearches)
             self.lastSearches.pop(0)
 
-    def replace_callback(pattern, callback, subject, limit=-1):
-        rs, res, x, ret = None, [], 0, subject
-        if limit == -1:
-            tmp = []
-            # while tmp and flag.index('g') != -1:
-            # findall ??
-            tmp = re.findall(subject, pattern)
-            if tmp:
-                res.append(tmp)
-        else:
-            # findall ??
-            res.append(re.findall(subject, pattern))
-        for r in reversed(res):
-            ## REPLACE
-            ret = ret.replace(r[0], callback(r))
-        return ret
+    
 
-
-    #
     # * Search the given content and replace.
     # *
     # * @param string          $search

@@ -258,7 +258,7 @@ class BootstrapFramework:
             items[f"text-{btColor}"] = f"text-{twColor}"
             items[f"bg-{btColor}"] = f"bg-{twColor}"
             items[f"table-{btColor}"] = f"bg-{twColor}"
-            # items['bg-gradient-'.btColor] = 'bg-'.twColor;
+            # items[f'bg-gradient-{btColor}'] = f'bg-{twColor}';
 
         return items
 
@@ -336,7 +336,7 @@ class BootstrapFramework:
             items[f"w-{btClass}"] = f"w-{twClass}"
 
             # no percentages in TW for heights except for full
-            if btClass == 100:
+            if btClass == "100":
                 items[f"h-{btClass}"] = f"h-{twClass}"
         return items
 
