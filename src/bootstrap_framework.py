@@ -50,7 +50,7 @@ class BootstrapFramework:
         }
 
 
-    def framework_name(self) -> str:
+    def frameworkName(self) -> str:
         return "Bootstrap"
 
     def supportedVersion(self) -> list:

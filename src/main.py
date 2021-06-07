@@ -64,6 +64,10 @@ class ConsoleHelper:
             if os.path.isfile(directory) and self.isConvertibleFile(extension):
                 self.fileConvert(os.path.realpath(directory))
 
+    def rreplace(self, s, old, new, offset):
+        lst = s.rsplit(old, offset)
+        return new.join(lst)
+
     def fileConvert(self, filePath):
         # //just in case
         # realpath>
@@ -97,12 +101,14 @@ class ConsoleHelper:
 
             return
 
-        content = file_get_contents(filePath)
+        with open(filePath, 'r') as f:
+            content = f.read()
 
         lastDotPosition = filePath.rfind(".")
+        ext = filePath.rsplit('.')[-1]
 
         if lastDotPosition != -1 and not self.overwrite:
-            newFilePath = substr_replace(filePath, ".tw", lastDotPosition, 0)
+            newFilePath = self.rreplace(filePath, ext, ".tw", lastDotPosition)
         elif not self.overwrite:
             newFilePath = filePath + ".tw"
         else:
@@ -116,7 +122,7 @@ class ConsoleHelper:
 
             if self.components:
                 if not self.__folderConvert:
-                    self.newComponentsFile(dirname(filePath))
+                    self.newComponentsFile(os.path.dirname(filePath))
 
                 self.writeComponentsToFile(newContent, os.path.dirname(filePath))
             else:
