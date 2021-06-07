@@ -351,10 +351,10 @@ class BootstrapFramework:
         for prop in spacingProperties:
             for btMedia, twMedia in self.__mediaOptions.items():
                 for btSpacing, twSpacing in self.__spacings.items():
-                    items[f'{property}-{btMedia}-{btSpacing}'] = f'{twMedia}:{property}-{twSpacing}'
+                    items[f'{prop}-{btMedia}-{btSpacing}'] = f'{twMedia}:{prop}-{twSpacing}'
                     items[f'{prop}{{regex_string}}-{btMedia}-{btSpacing}'] = f'{twMedia}:{prop}{{regex_string}}-{twSpacing}'
 
-                items[f'{prop}{{regex_string}}-{btMedia}-auto'] = f'{twMedia}:{property}{{regex_string}}-auto'
+                items[f'{prop}{{regex_string}}-{btMedia}-auto'] = f'{twMedia}:{prop}{{regex_string}}-auto'
 
         return items
 

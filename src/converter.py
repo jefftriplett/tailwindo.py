@@ -181,34 +181,32 @@ class Converter:
             # if (strpos($search, '{regex_string}') !== false || strpos($search, '{regex_number}') !== false) {
             if "{regex_string}" in search or "{regex_number}" in search:
                 currentSubstitute += 1
-                # for regeName, regexValue in ['regex_string'=> '[a-zA-Z0-9]+', 'regex_number' => '[0-9]+']:
-                for regeName, regexValue in {
-                    '{regex_string}': r'[a-zA-Z0-9]+',
-                    '{regex_number}': r'[0-9]+',
+                # for regexName, regexValue in ['regex_string'=> '[a-zA-Z0-9]+', 'regex_number' => '[0-9]+']:
+                for regexName, regexValue in {
+                    'regex_string': r'[a-zA-Z0-9]+',
+                    'regex_number': r'[0-9]+',
                     }.items():
-                    regexMatchCount = len(re.findall(fr"\\\\?{{{regeName}\\\\?}}", search))
+                    regexMatchCount = len(re.findall(fr"{{{regexName}}}", search))
                     search = re.sub(
-                        fr"\\\\?{{{regeName}\\\\?}}",
-                        f"(?P<{regeName}_{currentSubstitute}>{regexValue})",
+                        fr"{{{regexName}}}",
+                        f"(?P<{regexName}_{currentSubstitute}>{regexValue})",
                         search,
                         count=1,
                     )
 
                     replace = re.sub(
-                        fr"\\\\?{{{regeName}\\\\?}}",
-                        f"{{{regeName}_{currentSubstitute}}}",
+                        fr"{{{regexName}}}",
+                        f"{{{regexName}_{currentSubstitute}}}",
                         replace,
                         count=(1 if regexMatchCount > 1 else 0),
                     )
             break
 
-        #print(search)
         matches = re.search(
             fr"{regexStart}(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d])){regexEnd}",
             self.givenContent,
         )
         if not matches: return
-        print(matches)
 
         def evaluator(match):
 
