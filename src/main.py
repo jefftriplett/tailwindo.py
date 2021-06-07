@@ -42,20 +42,21 @@ class ConsoleHelper:
             + TailwindVersion
         )
 
-        # if (self.recursive):
-        #     iterator = new \RecursiveIteratorIterator(
-        #         new \RecursiveDirectoryIterator(
-        #             folderPath,
-        #             \RecursiveDirectoryIterator::SKIP_DOTS
-        #         ),
-        #         \RecursiveIteratorIterator::SELF_FIRST,
-        #         \RecursiveIteratorIterator::CATCH_GET_CHILD
-        #     );
-        # } else {
-        #     iterator = new \DirectoryIterator(folderPath);
-        # }
+        # TODO
+        if self.recursive:
+            iterator = os.walk(folderPath)
+            # iterator = new \RecursiveIteratorIterator(
+            #     new \RecursiveDirectoryIterator(
+            #         folderPath,
+            #         \RecursiveDirectoryIterator::SKIP_DOTS
+            #     ),
+            #     \RecursiveIteratorIterator::SELF_FIRST,
+            #     \RecursiveIteratorIterator::CATCH_GET_CHILD
+            # );
+        else:
+            iterator = [f for f in os.listdir(folderPath) if os.path.isfile(f)]
 
-        iterator = folderPath
+        # TODO
         if self.__folderConvert and self.components:
             self.newComponentsFile(os.path.realpath(folderPath))
 
@@ -153,6 +154,7 @@ class ConsoleHelper:
     # */
     # protected
     def isConvertibleFile(self, extension: str) -> bool:
+        """ checks extension is in the list of convertible extensions """
         return extension in self.extensions
 
     # protected
