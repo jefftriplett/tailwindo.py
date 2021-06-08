@@ -1,24 +1,26 @@
 import os
-import argparse
+from color import Colors
 from pathlib import Path
 from datetime import date
 from converter import Converter
 
-
+CONFIG_FILENAME = os.path.realpath('converter.conf')
+ 
 class ConsoleHelper:
-    def __init__(self, settings: dict):
+    def __init__(self, settings):
         self.converter = (
             Converter()
             .setFramework("bootstrap")
             .setGenerateComponents(False)
             .setPrefix("")
         )
+        
 
         self.recursive = False
-        self.overwrite = False # settings["overwrite"] or False
-        self.extensions = 'php,html' # settings["extensions"] or "php,html"
-        self.components = False # settings["components"] or False
-        self.__folderConvert = False # settings["folderConvert"] or False
+        self.overwrite = settings["overwrite"] or False
+        self.extensions = settings["extensions"] or "php,html"
+        self.components = settings["components"] or False
+        self.__folderConvert = settings["folderConvert"] or False
 
     def folderConvert(self, folderPath: str):
 
@@ -28,17 +30,18 @@ class ConsoleHelper:
         ) = self.converter.getFramework().supportedVersion()
 
         print(
-            "<fg=black;bg=blue>Converting Folder"
+            # "<fg=black;bg=blue>Converting Folder"
+            f"{Colors.OKBLUE}Converting Folder"
             + (" (extracted to tailwindo-components.css)" if self.components else "")
-            + ":</> "
+            + f":{Colors.ENDC} "
             + os.path.realpath(folderPath)
         )
         print(
-            "<fg=black;bg=green>Converting from</> "
+            f"{Colors.OKGREEN}Converting from{Colors.ENDC} "
             + self.converter.getFramework().frameworkName()
             + " "
             + frameworkVersion
-            + " <fg=black;bg=green> to </> Tailwind "
+            + f" {Colors.OKGREEN}to{Colors.ENDC} Tailwind "
             + TailwindVersion
         )
 
@@ -77,9 +80,9 @@ class ConsoleHelper:
 
         if not self.__folderConvert:
             print(
-                "<fg=black;bg=blue>Converting File: "
+                f"{Colors.OKBLUE}Converting File: "
                 + ("(extracted to tailwindo-components.css)" if self.components else "")
-                + "</> "
+                + f"{Colors.ENDC} "
                 + filePath
             )
 
@@ -88,17 +91,17 @@ class ConsoleHelper:
                 TailwindVersion,
             ) = self.converter.getFramework().supportedVersion()
             print(
-                "<fg=black;bg=green>Converting from</> "
+                f"{Colors.OKGREEN}Converting from{Colors.ENDC} "
                 + self.converter.getFramework().frameworkName()
                 + " "
                 + frameworkVersion
-                + " <fg=black;bg=green> to </> Tailwind "
+                + f" {Colors.OKGREEN}to{Colors.ENDC} Tailwind "
                 + TailwindVersion
                 + "\n"
             )
 
         if not os.path.isfile(filePath):
-            print("<comment>Couldn't convert: </comment>" + os.path.basename(filePath))
+            print(f"{Colors.WARNING}Couldn't convert: {Colors.ENDC}" + os.path.basename(filePath))
 
             return
 
@@ -106,12 +109,13 @@ class ConsoleHelper:
             content = f.read()
 
         lastDotPosition = filePath.rfind(".")
+        # 'html' or ...
         ext = filePath.rsplit('.')[-1]
 
         if lastDotPosition != -1 and not self.overwrite:
-            newFilePath = self.rreplace(filePath, ext, ".tw", lastDotPosition)
+            newFilePath = self.rreplace(filePath, ext, "tw", lastDotPosition)
         elif not self.overwrite:
-            newFilePath = filePath + ".tw"
+            newFilePath = filePath + "tw"
         else:
             # // Set the new path to the old path to make sure we overwrite it
             newFilePath = filePath
@@ -119,7 +123,7 @@ class ConsoleHelper:
         newContent = self.converter.setContent(content).convert().get(self.components)
 
         if content != newContent:
-            print("<info>processed: </info>" + os.path.basename(newFilePath))
+            print(f"{Colors.OKCYAN}processed: {Colors.ENDC}" + os.path.basename(newFilePath))
 
             if self.components:
                 if not self.__folderConvert:
@@ -130,7 +134,7 @@ class ConsoleHelper:
                 with open(newFilePath, 'a') as f:
                     f.write(newContent)
         else:
-            print("<comment>Nothing to convert: </comment>"\
+            print(f"{Colors.WARNING}Nothing to convert: {Colors.ENDC}"\
                   + os.path.basename(filePath))
 
     def codeConvert(self, code: str):
@@ -141,12 +145,12 @@ class ConsoleHelper:
             .get(self.components)
         )
 
-        if convertedCode:
-            print(f"<info>Converted Code: </info>{convertedCode}")
+        if convertedCode != code:
+            print(f"{Colors.OKCYAN}Converted Code: {Colors.ENDC}{convertedCode}")
         else:
             print(
-                "<comment>Nothing generated! It means that TailwindCSS has no equivalent for that classes,"
-                "or it has exactly classes with the same name.</comment>"
+                f"{Colors.WARNING}Nothing generated! It means that TailwindCSS has no equivalent for that classes,"
+                f"or it has exactly classes with the same name.{Colors.ENDC}"
             )
 
     # *
@@ -171,17 +175,10 @@ class ConsoleHelper:
 
         file_exists = os.path.exists(path)
         if file_exists:
-            os.unlink()
+            os.unlink(path)
 
         with open(cssFilePath, "a") as f:
             f.write(
-                f"/** Auto-generated by Tailwindo: {date.today.strftime('%Y-%m-%d')} */\n\n"
+                f"/** Auto-generated by Tailwindo: {date.today().strftime('%Y-%m-%d')} */\n\n"
             )
 
-
-# def main():
-#     parser = argparse.ArgumentParser(description = 'argparse recipe book')
-#     fn(parser)
-#
-# if __name__ == '__main__':
-#     main()
