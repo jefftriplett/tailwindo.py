@@ -1,5 +1,5 @@
 import re
-from bootstrap_framework import BootstrapFramework
+from .framework.bootstrap_framework import BootstrapFramework
 
 
 class Converter:
@@ -60,7 +60,7 @@ class Converter:
     def convert(self):
         for item in self.getFramework().get():
             for search, replace in item.items():
-                self.searchAndReplace(search, replace)
+                self._searchAndReplace(search, replace)
 
         return self
 
@@ -96,31 +96,26 @@ class Converter:
     #
     # * search for a word in the last searches.
     # */
-    # @protected
-    def isInLastSearches(self, searchFor: str, limit: int = 0) -> bool:
+    def _isInLastSearches(self, searchFor: str, limit: int = 0) -> bool:
         for i, search in enumerate(self.lastSearches):
-            # strpos?
-            # if not self.strpos(search, searchFor):
-            #    return True
             if searchFor in search:
                 return True
             if i >= limit and limit > 0:
                 return False
         return False
 
-    def stripslashes(self, s: str) -> str:
+    @staticmethod
+    def stripslashes(s: str) -> str:
         r = re.sub(r"\\(n|r)", "\n", s)
         r = re.sub(r"\\", "", r)
         return r
 
-    # @protected
-    def addToLastSearches(self, search):
+    def _addToLastSearches(self, search):
         self.changes += 1
 
-        # strip slashes?
         search = self.stripslashes(search)
 
-        if self.isInLastSearches(search):
+        if self._isInLastSearches(search):
             return
 
         self.lastSearches = search
@@ -136,8 +131,7 @@ class Converter:
     # * @param string          $search
     # * @param string|\Closure $replace
     # */
-    # @protected
-    def searchAndReplace(self, search, replace) -> None:
+    def _searchAndReplace(self, search, replace) -> None:
         # if ($replace instanceof \Closure):
         #     callableReplace = \Closure::bind($replace, self, self::class)
         #     replace = callableReplace()
@@ -239,4 +233,4 @@ class Converter:
                     result = re.sub(r"{tailwindo\|.*?}", "", result, count - 1)
 
                 self.givenContent = self.givenContent.replace(matches[0], result)
-                self.addToLastSearches(search)
+                self._addToLastSearches(search)

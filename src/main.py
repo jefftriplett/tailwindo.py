@@ -1,8 +1,8 @@
 import os
-from color import Colors
 from pathlib import Path
 from datetime import date
-from converter import Converter
+from .converter import Converter
+from .color import Colors
 
 CONFIG_FILENAME = os.path.realpath('converter.conf')
  
@@ -30,7 +30,6 @@ class ConsoleHelper:
         ) = self.converter.getFramework().supportedVersion()
 
         print(
-            # "<fg=black;bg=blue>Converting Folder"
             f"{Colors.OKBLUE}Converting Folder"
             + (" (extracted to tailwindo-components.css)" if self.components else "")
             + f":{Colors.ENDC} "
@@ -61,14 +60,15 @@ class ConsoleHelper:
 
         # TODO
         if self.__folderConvert and self.components:
-            self.newComponentsFile(os.path.realpath(folderPath))
+            self._newComponentsFile(os.path.realpath(folderPath))
 
         for directory in iterator:
             extension = directory.split(".")[-1]
-            if os.path.isfile(directory) and self.isConvertibleFile(extension):
+            if os.path.isfile(directory) and self._isConvertibleFile(extension):
                 self.fileConvert(os.path.realpath(directory))
 
-    def rreplace(self, s, old, new, offset):
+    @staticmethod
+    def rreplace(s, old, new, offset):
         lst = s.rsplit(old, offset)
         return new.join(lst)
 
@@ -120,19 +120,19 @@ class ConsoleHelper:
             # // Set the new path to the old path to make sure we overwrite it
             newFilePath = filePath
 
-        newContent = self.converter.setContent(content).convert().get(self.components)
+        _newContent = self.converter.setContent(content).convert().get(self.components)
 
-        if content != newContent:
+        if content != _newContent:
             print(f"{Colors.OKCYAN}processed: {Colors.ENDC}" + os.path.basename(newFilePath))
 
             if self.components:
                 if not self.__folderConvert:
-                    self.newComponentsFile(os.path.dirname(filePath))
+                    self._newComponentsFile(os.path.dirname(filePath))
 
-                self.writeComponentsToFile(newContent, os.path.dirname(filePath))
+                self._writeComponentsToFile(_newContent, os.path.dirname(filePath))
             else:
                 with open(newFilePath, 'a') as f:
-                    f.write(newContent)
+                    f.write(_newContent)
         else:
             print(f"{Colors.WARNING}Nothing to convert: {Colors.ENDC}"\
                   + os.path.basename(filePath))
@@ -157,19 +157,19 @@ class ConsoleHelper:
     # * Check whether a file is convertible or not based on its extension.
     # */
     # protected
-    def isConvertibleFile(self, extension: str) -> bool:
+    def _isConvertibleFile(self, extension: str) -> bool:
         """ checks extension is in the list of convertible extensions """
         return extension in self.extensions
 
     # protected
-    def writeComponentsToFile(self, code, path):
+    def _writeComponentsToFile(self, code, path):
         cssFilePath = f"{path}/tailwindo-components.css"
         # file_put_contents(cssFilePath, code.PHP_EOL, FILE_APPEND)
         with open(cssFilePath, "a") as f:
             f.write("\n")
 
     # protected
-    def newComponentsFile(self, path):
+    def _newComponentsFile(self, path):
         cssFilePath = f"{path}/tailwindo-components.css"
         path = cssFilePath  # Path(cssFilePath)
 

@@ -5,8 +5,8 @@ from collections import defaultdict
 class BootstrapFramework:
     def __init__(self):
         self.lastSearches = []
-        self.__hidden = 0
-        self.__mediaOptions = {
+        self._hidden = 0
+        self._mediaOptions = {
             "xs": "sm",
             "sm": "sm",
             "md": "md",
@@ -14,7 +14,7 @@ class BootstrapFramework:
             "xl": "xl",
             "print": "print",
         }
-        self.__spacings = {
+        self._spacings = {
             "0": "0",
             "1": "1",
             "2": "2",
@@ -22,7 +22,7 @@ class BootstrapFramework:
             "4": "6",
             "5": "12",
         }
-        self.__grid = {
+        self._grid = {
             "1": "1/6",
             "2": "1/5",
             "3": "1/4",
@@ -36,7 +36,7 @@ class BootstrapFramework:
             "11": "5/6",
             "12": "full",
         }
-        self.__colors = {
+        self._colors = {
             "primary": "blue-600",
             "secondary": "gray-600",
             "success": "green-500",
@@ -193,7 +193,7 @@ class BootstrapFramework:
         # col-(xs|sm|md|lg|xl) = (sm|md|lg|xl):flex-grow
         # ml-(xs|sm|md|lg|xl)-auto = (sm|md|lg|xl):mx-auto:ml-auto
         # mr-(xs|sm|md|lg|xl)-auto = (sm|md|lg|xl):mx-auto:mr-auto
-        for btMedia, twMedia in self.__mediaOptions.items():
+        for btMedia, twMedia in self._mediaOptions.items():
             items["col-" + btMedia] = (
                 "relative " + twMedia + ":flex-grow " + twMedia + ":flex-1"
             )
@@ -203,7 +203,7 @@ class BootstrapFramework:
             # col-btElem
             # col-(xs|sm|md|lg|xl)-btElem = (sm|md|lg|xl):w-twElem
             # offset-(xs|sm|md|lg|xl)-btElem = (sm|md|lg|xl):mx-auto
-            for btElem, twElem in self.__grid.items():
+            for btElem, twElem in self._grid.items():
                 if btMedia == "xs":
                     items["col-" + btElem] = "w-" + twElem
                 items[
@@ -234,7 +234,7 @@ class BootstrapFramework:
             items[f"border-{btSide}"] = f"border-{twSide}"
             items[f"border-{btSide}-0"] = f"border-{twSide}-0"
 
-        for btColor, twColor in self.__colors.items():
+        for btColor, twColor in self._colors.items():
             items[f"border-{btColor}"] = f"border-{twColor}"
 
         style = {
@@ -254,7 +254,7 @@ class BootstrapFramework:
     def colors(self) -> dict:
         items = defaultdict(str)
 
-        for btColor, twColor in self.__colors.items():
+        for btColor, twColor in self._colors.items():
             items[f"text-{btColor}"] = f"text-{twColor}"
             items[f"bg-{btColor}"] = f"bg-{twColor}"
             items[f"table-{btColor}"] = f"bg-{twColor}"
@@ -281,7 +281,7 @@ class BootstrapFramework:
         for btElem, twElem in elem.items():
             items[f"d-{btElem}"] = twElem
 
-            for btMedia, twMedia in self.__mediaOptions.items():
+            for btMedia, twMedia in self._mediaOptions.items():
                 items[f"d-{btMedia}-{btElem}"] = f"{twMedia}:{twElem}"
 
         return items
@@ -290,8 +290,8 @@ class BootstrapFramework:
     def flexElements(self) -> dict:
         items = defaultdict(str)
 
-        self.__mediaOptions[""] = ""
-        for btMedia, twMedia in self.__mediaOptions.items():
+        self._mediaOptions[""] = ""
+        for btMedia, twMedia in self._mediaOptions.items():
             for key in ['row', 'row-reverse', 'column', 'column-reverse']:
                 items['flex'+('' if not btMedia else '-')+btMedia+'-'+key] = ('' if not twMedia else twMedia+':')+'flex-'+key.replace('column', 'col')
 
@@ -345,12 +345,12 @@ class BootstrapFramework:
         spacingProperties = ['p', 'm']
 
         for prop in spacingProperties:
-            for btSpacing, twSpacing in self.__spacings.items():
+            for btSpacing, twSpacing in self._spacings.items():
                 items[f"{prop}-{btSpacing}"] = f'{prop}-{twSpacing}'
 
         for prop in spacingProperties:
-            for btMedia, twMedia in self.__mediaOptions.items():
-                for btSpacing, twSpacing in self.__spacings.items():
+            for btMedia, twMedia in self._mediaOptions.items():
+                for btSpacing, twSpacing in self._spacings.items():
                     items[f'{prop}-{btMedia}-{btSpacing}'] = f'{twMedia}:{prop}-{twSpacing}'
                     items[f'{prop}{{regex_string}}-{btMedia}-{btSpacing}'] = f'{twMedia}:{prop}{{regex_string}}-{twSpacing}'
 
@@ -361,7 +361,7 @@ class BootstrapFramework:
     def floats(self):
         items = defaultdict(str)
 
-        for btMedia, twMedia in self.__mediaOptions.items():
+        for btMedia, twMedia in self._mediaOptions.items():
             for alignment in ["left", "right", "none"]:
                 items[f"float-{btMedia}-{alignment}"] = f"{twMedia}:float-{alignment}"
 
@@ -396,9 +396,9 @@ class BootstrapFramework:
             "font-italic": "italic",
         }
 
-        self.__mediaOptions[""] = ""
+        self._mediaOptions[""] = ""
         for alignment in ["left", "right", "center", "justify"]:
-            for btMedia, twMedia in self.__mediaOptions.items():
+            for btMedia, twMedia in self._mediaOptions.items():
                 items[
                     "text" + ("" if not btMedia else f"-{btMedia}") + f"-{alignment}"
                 ] = ("" if not twMedia else f"{twMedia}:") + f"text-{alignment}"
@@ -607,7 +607,7 @@ class BootstrapFramework:
         }
 
         # TODO
-        for btColor, twColor in self.__colors.items():
+        for btColor, twColor in self._colors.items():
             if btColor == "dark":
                 items[f"list-group-item-{btColor}"] = "text-white bg-gray-700"
             elif btColor == "light":
