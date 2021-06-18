@@ -3,13 +3,13 @@ from .framework.bootstrap_framework import BootstrapFramework
 
 
 class Converter:
-    def __init__(self, content="", classesOnly: bool=False, generateComponents: bool=False, prefix=""):
+    def __init__(self, content="", classesOnly: bool=False, generateComponents: bool=False, prefix="", framework="bootstrap"):
         self.changes = 0
         self.isCssClassesOnly = classesOnly
         self.generateComponents = generateComponents
         self.prefix = prefix
 
-        self.framework = None
+        self.framework = self.setFramework(framework)
 
         if content:
             self.setContent(content)
@@ -21,12 +21,13 @@ class Converter:
         return self
 
     def setFramework(self, framework: str):
+        """
+        sets framework, 
+        Only checks for to bootstrap...
+        """
         if framework.lower() == "bootstrap":
             self.framework = BootstrapFramework()
 
-        return self
-
-    def getFramework(self):
         return self.framework
 
     def classesOnly(self, value: bool):
@@ -34,12 +35,6 @@ class Converter:
         self.isCssClassesOnly = value
         return self
 
-    def setGenerateComponents(self, value: bool):
-        """Is the given content a CSS content or HTML content."""
-        self.generateComponents = value
-        return self
-
-    #
     # * The prefix option allows you to add a custom prefix to all of
     # Tailwind's generated utility classes. This can be really useful when
     # layering Tailwind on top of existing CSS where there might be naming
@@ -48,7 +43,6 @@ class Converter:
     # * @param string $prefix
     # *
     # * @return Converter
-    #
 
     def setPrefix(self, prefix: str):
         prefix = prefix.strip()

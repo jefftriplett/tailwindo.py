@@ -8,12 +8,7 @@ CONFIG_FILENAME = os.path.realpath('converter.conf')
  
 class ConsoleHelper:
     def __init__(self, settings):
-        self.converter = (
-            Converter()
-            .setFramework("bootstrap")
-            .setGenerateComponents(False)
-            .setPrefix("")
-        )
+        self.converter = Converter()
         
 
         self.recursive = False
@@ -27,7 +22,7 @@ class ConsoleHelper:
         (
             frameworkVersion,
             TailwindVersion
-        ) = self.converter.getFramework().supportedVersion()
+        ) = self.converter.framework.supportedVersion()
 
         print(
             f"{Colors.OKBLUE}Converting Folder"
@@ -37,7 +32,7 @@ class ConsoleHelper:
         )
         print(
             f"{Colors.OKGREEN}Converting from{Colors.ENDC} "
-            + self.converter.getFramework().frameworkName()
+            + self.converter.framework.frameworkName()
             + " "
             + frameworkVersion
             + f" {Colors.OKGREEN}to{Colors.ENDC} Tailwind "
@@ -89,10 +84,10 @@ class ConsoleHelper:
             (
                 frameworkVersion,
                 TailwindVersion,
-            ) = self.converter.getFramework().supportedVersion()
+            ) = self.converter.framework.supportedVersion()
             print(
                 f"{Colors.OKGREEN}Converting from{Colors.ENDC} "
-                + self.converter.getFramework().frameworkName()
+                + self.converter.framework.frameworkName()
                 + " "
                 + frameworkVersion
                 + f" {Colors.OKGREEN}to{Colors.ENDC} Tailwind "

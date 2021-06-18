@@ -4,13 +4,14 @@ from src.converter import Converter
 
 class TestConverter(unittest.TestCase):
     def setUp(self):
-        self.converter = Converter().setFramework("bootstrap")
+        self.class_only = Converter(classesOnly=True)
+        self.converter = Converter()
 
     def test_it_returns_output(self):
 
         self.assertEqual(
             "sm:flex",
-            self.converter.classesOnly(True).setContent("d-sm-flex").convert().get(),
+            self.class_only.setContent("d-sm-flex").convert().get(),
         )
         self.assertEqual(
             '<a class="text-gray-700">love</a>',
@@ -21,9 +22,10 @@ class TestConverter(unittest.TestCase):
     def test_it_output_with_prefix(self):
 
         self.converter.setPrefix("tw-")
+        self.class_only.setPrefix("tw-")
         self.assertEqual(
             "sm:tw-flex",
-            self.converter.classesOnly(True).setContent("d-sm-flex").convert().get(),
+            self.class_only.setContent("d-sm-flex").convert().get(),
         )
         self.assertEqual(
             '<a class="tw-text-gray-700">love</a>',

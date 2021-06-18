@@ -67,7 +67,6 @@ def main():
         print(f"{Colors.WARNING}Oops! nothing to convert.{Colors.ENDC}")
         return -1
 
-    print(args)
     acceptedExtensions = args.extensions.split(",")
 
     framework = args.framework.lower()
