@@ -3,13 +3,13 @@ from .framework.bootstrap_framework import BootstrapFramework
 
 
 class Converter:
-    def __init__(self, content=""):
-        self.isCssClassesOnly = False
+    def __init__(self, content="", classesOnly: bool=False, generateComponents: bool=False, prefix=""):
         self.changes = 0
-        self.generateComponents = False
+        self.isCssClassesOnly = classesOnly
+        self.generateComponents = generateComponents
+        self.prefix = prefix
 
         self.framework = None
-        self.prefix = ""
 
         if content:
             self.setContent(content)
@@ -58,7 +58,7 @@ class Converter:
         return self
 
     def convert(self):
-        for item in self.getFramework().get():
+        for item in self.framework.get():
             for search, replace in item.items():
                 self._searchAndReplace(search, replace)
 
