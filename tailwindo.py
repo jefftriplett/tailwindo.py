@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
 import configparser
+from pathlib import Path
 from src.color import Colors
 from src.main import ConsoleHelper
 
@@ -35,9 +35,9 @@ def get_parser():
         "-e",
         "--extensions",
         dest="extensions",
-        help="This allows for custom extensions",
+        help="This allows for custom extensions ex: '.jsx' ",
         type=str,
-        default="php,html",
+        default=".php,.html",
     )
     parser.add_argument(
         "-t",
@@ -60,16 +60,16 @@ def get_parser():
 
 def main():
     parser = get_parser()
-    args = parser.parse_args()
-    # args = vars(parser.parse_args())
-    arg = args.arg
+    args = vars(parser.parse_args())
+
+    arg = args['arg']
     if not args:
         print(f"{Colors.WARNING}Oops! nothing to convert.{Colors.ENDC}")
         return -1
 
-    acceptedExtensions = args.extensions.split(",")
+    acceptedExtensions = args['extensions'].split(",")
 
-    framework = args.framework.lower()
+    framework = args['framework'].lower()
 
     # # if (! class_exists('Awssat\\Tailwindo\\Framework\\' . ucfirst(framework).'Framework')):
     # if f'{framework.capitalize()}Framework' not in dir():
@@ -78,22 +78,22 @@ def main():
 
     consoleHelper = ConsoleHelper(
         {
-            "recursive": args.recursive,
-            "overwrite": args.replace,
+            "recursive": args['recursive'],
+            "overwrite": args['replace'],
             "extensions": acceptedExtensions,
             "framework": framework,
-            "components": args.components,
-            "prefix": args.prefix,
-            "folderConvert": os.path.isdir(arg),
+            "components": args['components'],
+            "prefix": args['prefix'],
+            "folderConvert": Path(arg).is_dir(),
         }
     )
 
     # file?
-    if os.path.isfile(arg):
+    if Path(arg).is_file():
         return consoleHelper.fileConvert(arg)
 
     # folder ?
-    if os.path.isdir(arg):
+    if Path(arg).is_dir():
         return consoleHelper.folderConvert(arg)
 
     # any html/css classes

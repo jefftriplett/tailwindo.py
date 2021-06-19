@@ -1,34 +1,28 @@
-import os
 from pathlib import Path
 from datetime import date
 from .converter import Converter
 from .color import Colors
 
-CONFIG_FILENAME = os.path.realpath('converter.conf')
- 
+
 class ConsoleHelper:
     def __init__(self, settings):
         self.converter = Converter()
-        
 
-        self.recursive = False
+        self.recursive = settings["recursive"] or False
         self.overwrite = settings["overwrite"] or False
-        self.extensions = settings["extensions"] or "php,html"
+        self.extensions = settings["extensions"] or {".php",".html"}
         self.components = settings["components"] or False
-        self.__folderConvert = settings["folderConvert"] or False
+        self._folderConvert = settings["folderConvert"] or False
 
     def folderConvert(self, folderPath: str):
-
-        (
-            frameworkVersion,
-            TailwindVersion
-        ) = self.converter.framework.supportedVersion()
+        frameworkVersion, TailwindVersion = self.converter.framework.supportedVersion()
+        folderPath = Path(folderPath)
 
         print(
             f"{Colors.OKBLUE}Converting Folder"
             + (" (extracted to tailwindo-components.css)" if self.components else "")
             + f":{Colors.ENDC} "
-            + os.path.realpath(folderPath)
+            + folderPath.resolve().name
         )
         print(
             f"{Colors.OKGREEN}Converting from{Colors.ENDC} "
@@ -39,28 +33,18 @@ class ConsoleHelper:
             + TailwindVersion
         )
 
-        # TODO
         if self.recursive:
-            iterator = os.walk(folderPath)
-            # iterator = new \RecursiveIteratorIterator(
-            #     new \RecursiveDirectoryIterator(
-            #         folderPath,
-            #         \RecursiveDirectoryIterator::SKIP_DOTS
-            #     ),
-            #     \RecursiveIteratorIterator::SELF_FIRST,
-            #     \RecursiveIteratorIterator::CATCH_GET_CHILD
-            # );
+            iterator = (f for f in folderPath.rglob("*") if f.is_file())
         else:
-            iterator = [f for f in os.listdir(folderPath) if os.path.isfile(f)]
+            iterator = (f for f in folderPath.iterdir() if f.is_file())
 
-        # TODO
-        if self.__folderConvert and self.components:
-            self._newComponentsFile(os.path.realpath(folderPath))
+        if self._folderConvert and self.components:
+            self._newComponentsFile(folderPath.resolve())
 
-        for directory in iterator:
-            extension = directory.split(".")[-1]
-            if os.path.isfile(directory) and self._isConvertibleFile(extension):
-                self.fileConvert(os.path.realpath(directory))
+        for child in iterator:
+            extension = child.suffix
+            if self._isConvertibleFile(extension):
+                self.fileConvert(child.resolve())
 
     @staticmethod
     def rreplace(s, old, new, offset):
@@ -68,17 +52,14 @@ class ConsoleHelper:
         return new.join(lst)
 
     def fileConvert(self, filePath):
-        # //just in case
-        # realpath>
-        filePath = os.path.realpath(filePath)
-        # filePath = Path(filePath)
+        filePath = Path(filePath).resolve()
 
-        if not self.__folderConvert:
+        if not self._folderConvert:
             print(
                 f"{Colors.OKBLUE}Converting File: "
                 + ("(extracted to tailwindo-components.css)" if self.components else "")
                 + f"{Colors.ENDC} "
-                + filePath
+                + str(filePath)
             )
 
             (
@@ -95,22 +76,16 @@ class ConsoleHelper:
                 + "\n"
             )
 
-        if not os.path.isfile(filePath):
-            print(f"{Colors.WARNING}Couldn't convert: {Colors.ENDC}" + os.path.basename(filePath))
+        if not filePath.is_file():
+            print(f"{Colors.WARNING}Couldn't convert: {Colors.ENDC}" + str(filePath.name))
 
             return
 
         with open(filePath, 'r') as f:
             content = f.read()
 
-        lastDotPosition = filePath.rfind(".")
-        # 'html' or ...
-        ext = filePath.rsplit('.')[-1]
-
-        if lastDotPosition != -1 and not self.overwrite:
-            newFilePath = self.rreplace(filePath, ext, "tw", lastDotPosition)
-        elif not self.overwrite:
-            newFilePath = filePath + "tw"
+        if not self.overwrite:
+            newFilePath = filePath.with_suffix(".tw")
         else:
             # // Set the new path to the old path to make sure we overwrite it
             newFilePath = filePath
@@ -118,19 +93,19 @@ class ConsoleHelper:
         _newContent = self.converter.setContent(content).convert().get(self.components)
 
         if content != _newContent:
-            print(f"{Colors.OKCYAN}processed: {Colors.ENDC}" + os.path.basename(newFilePath))
+            print(f"{Colors.OKCYAN}processed: {Colors.ENDC}" + str(newFilePath.name))
 
             if self.components:
-                if not self.__folderConvert:
-                    self._newComponentsFile(os.path.dirname(filePath))
+                if not self._folderConvert:
+                    self._newComponentsFile(str(filePath.parent))
 
-                self._writeComponentsToFile(_newContent, os.path.dirname(filePath))
+                self._writeComponentsToFile(_newContent, str(filePath.parent))
             else:
                 with open(newFilePath, 'a') as f:
                     f.write(_newContent)
         else:
             print(f"{Colors.WARNING}Nothing to convert: {Colors.ENDC}"\
-                  + os.path.basename(filePath))
+                  + str(filePath.name))
 
     def codeConvert(self, code: str):
         convertedCode = (
@@ -159,18 +134,17 @@ class ConsoleHelper:
     # protected
     def _writeComponentsToFile(self, code, path):
         cssFilePath = f"{path}/tailwindo-components.css"
-        # file_put_contents(cssFilePath, code.PHP_EOL, FILE_APPEND)
         with open(cssFilePath, "a") as f:
             f.write("\n")
 
     # protected
     def _newComponentsFile(self, path):
         cssFilePath = f"{path}/tailwindo-components.css"
-        path = cssFilePath  # Path(cssFilePath)
+        path = Path(cssFilePath)
 
-        file_exists = os.path.exists(path)
+        file_exists = path.exists()
         if file_exists:
-            os.unlink(path)
+            path.unlink()
 
         with open(cssFilePath, "a") as f:
             f.write(
