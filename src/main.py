@@ -10,113 +10,116 @@ class ConsoleHelper:
 
         self.recursive = settings["recursive"] or False
         self.overwrite = settings["overwrite"] or False
-        self.extensions = settings["extensions"] or {".php",".html"}
+        self.extensions = settings["extensions"] or {".php", ".html"}
         self.components = settings["components"] or False
-        self._folderConvert = settings["folderConvert"] or False
+        self._folder_convert = settings["folder_convert"] or False
 
-    def folderConvert(self, folderPath: str):
-        frameworkVersion, TailwindVersion = self.converter.framework.supported_version
-        folderPath = Path(folderPath)
+    def folder_convert(self, folder_path: str):
+        framework_version, tailwind_version = self.converter.framework.supported_version
+        folder_path = Path(folder_path)
 
         print(
             f"{Colors.OKBLUE}Converting Folder"
             + (" (extracted to tailwindo-components.css)" if self.components else "")
             + f":{Colors.ENDC} "
-            + folderPath.resolve().name
+            + folder_path.resolve().name
         )
         print(
             f"{Colors.OKGREEN}Converting from{Colors.ENDC} "
             + self.converter.framework.name
             + " "
-            + frameworkVersion
+            + framework_version
             + f" {Colors.OKGREEN}to{Colors.ENDC} Tailwind "
-            + TailwindVersion
+            + tailwind_version
         )
 
         if self.recursive:
-            iterator = (f for f in folderPath.rglob("*") if f.is_file())
+            iterator = (f for f in folder_path.rglob("*") if f.is_file())
         else:
-            iterator = (f for f in folderPath.iterdir() if f.is_file())
+            iterator = (f for f in folder_path.iterdir() if f.is_file())
 
-        if self._folderConvert and self.components:
-            self._newComponentsFile(folderPath.resolve())
+        if self._folder_convert and self.components:
+            self._new_components_file(folder_path.resolve())
 
         for child in iterator:
             extension = child.suffix
-            if self._isConvertibleFile(extension):
-                self.fileConvert(child.resolve())
+            if self._is_convertible_file(extension):
+                self.file_convert(child.resolve())
 
     @staticmethod
     def rreplace(s, old, new, offset):
         lst = s.rsplit(old, offset)
         return new.join(lst)
 
-    def fileConvert(self, filePath):
-        filePath = Path(filePath).resolve()
+    def file_convert(self, file_path):
+        file_path = Path(file_path).resolve()
 
-        if not self._folderConvert:
+        if not self._folder_convert:
             print(
                 f"{Colors.OKBLUE}Converting File: "
                 + ("(extracted to tailwindo-components.css)" if self.components else "")
                 + f"{Colors.ENDC} "
-                + str(filePath)
+                + str(file_path)
             )
 
             (
-                frameworkVersion,
-                TailwindVersion,
+                framework_version,
+                tailwind_version,
             ) = self.converter.framework.supported_version
             print(
                 f"{Colors.OKGREEN}Converting from{Colors.ENDC} "
                 + self.converter.framework.name
                 + " "
-                + frameworkVersion
+                + framework_version
                 + f" {Colors.OKGREEN}to{Colors.ENDC} Tailwind "
-                + TailwindVersion
+                + tailwind_version
                 + "\n"
             )
 
-        if not filePath.is_file():
-            print(f"{Colors.WARNING}Couldn't convert: {Colors.ENDC}" + str(filePath.name))
+        if not file_path.is_file():
+            print(
+                f"{Colors.WARNING}Couldn't convert: {Colors.ENDC}" + str(file_path.name)
+            )
 
             return
 
-        with open(filePath, 'r') as f:
+        with open(file_path, "r") as f:
             content = f.read()
 
         if not self.overwrite:
-            newFilePath = filePath.with_suffix(".tw")
+            new_file_path = file_path.with_suffix(".tw")
         else:
             # // Set the new path to the old path to make sure we overwrite it
-            newFilePath = filePath
+            new_file_path = file_path
 
-        _newContent = self.converter.setContent(content).convert().get(self.components)
+        _new_content = self.converter.set_content(content).convert(self.components)
 
-        if content != _newContent:
-            print(f"{Colors.OKCYAN}processed: {Colors.ENDC}" + str(newFilePath.name))
+        if content != _new_content:
+            print(f"{Colors.OKCYAN}processed: {Colors.ENDC}" + str(new_file_path.name))
 
             if self.components:
-                if not self._folderConvert:
-                    self._newComponentsFile(str(filePath.parent))
+                if not self._folder_convert:
+                    self._new_components_file(str(file_path.parent))
 
-                self._writeComponentsToFile(_newContent, str(filePath.parent))
+                self._write_components_to_file(_new_content, str(file_path.parent))
             else:
-                with open(newFilePath, 'a') as f:
-                    f.write(_newContent)
+                with open(new_file_path, "a") as f:
+                    f.write(_new_content)
         else:
-            print(f"{Colors.WARNING}Nothing to convert: {Colors.ENDC}"\
-                  + str(filePath.name))
+            print(
+                f"{Colors.WARNING}Nothing to convert: {Colors.ENDC}"
+                + str(file_path.name)
+            )
 
-    def codeConvert(self, code: str):
-        convertedCode = (
-            self.converter.setContent(code)
-            .classesOnly("<" not in code and ">" not in code)
-            .convert()
-            .get(self.components)
+    def code_convert(self, code: str):
+        converted_code = (
+            self.converter.set_content(code)
+            .classes_only("<" not in code and ">" not in code)
+            .convert(self.components)
         )
 
-        if convertedCode != code:
-            print(f"{Colors.OKCYAN}Converted Code: {Colors.ENDC}{convertedCode}")
+        if converted_code != code:
+            print(f"{Colors.OKCYAN}Converted Code: {Colors.ENDC}{converted_code}")
         else:
             print(
                 f"{Colors.WARNING}Nothing generated! It means that TailwindCSS has no equivalent for that classes,"
@@ -127,27 +130,26 @@ class ConsoleHelper:
     # * Check whether a file is convertible or not based on its extension.
     # */
     # protected
-    def _isConvertibleFile(self, extension: str) -> bool:
+    def _is_convertible_file(self, extension: str) -> bool:
         """ checks extension is in the list of convertible extensions """
         return extension in self.extensions
 
     # protected
-    def _writeComponentsToFile(self, code, path):
-        cssFilePath = f"{path}/tailwindo-components.css"
-        with open(cssFilePath, "a") as f:
+    def _write_components_to_file(self, code, path):
+        css_file_path = f"{path}/tailwindo-components.css"
+        with open(css_file_path, "a") as f:
             f.write("\n")
 
     # protected
-    def _newComponentsFile(self, path):
-        cssFilePath = f"{path}/tailwindo-components.css"
-        path = Path(cssFilePath)
+    def _new_components_file(self, path):
+        css_file_path = f"{path}/tailwindo-components.css"
+        path = Path(css_file_path)
 
         file_exists = path.exists()
         if file_exists:
             path.unlink()
 
-        with open(cssFilePath, "a") as f:
+        with open(css_file_path, "a") as f:
             f.write(
                 f"/** Auto-generated by Tailwindo: {date.today().strftime('%Y-%m-%d')} */\n\n"
             )
-

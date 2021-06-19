@@ -62,42 +62,42 @@ def main():
     parser = get_parser()
     args = vars(parser.parse_args())
 
-    arg = args['arg']
+    arg = args["arg"]
     if not args:
         print(f"{Colors.WARNING}Oops! nothing to convert.{Colors.ENDC}")
         return -1
 
-    acceptedExtensions = args['extensions'].split(",")
+    accepted_extensions = args["extensions"].split(",")
 
-    framework = args['framework'].lower()
+    framework = args["framework"].lower()
 
     # # if (! class_exists('Awssat\\Tailwindo\\Framework\\' . ucfirst(framework).'Framework')):
     # if f'{framework.capitalize()}Framework' not in dir():
     #     print(f"{Colors.WARNING}Oops! {framework} is not supported!{Colors.ENDC}")
     #     return -1
 
-    consoleHelper = ConsoleHelper(
+    console_helper = ConsoleHelper(
         {
-            "recursive": args['recursive'],
-            "overwrite": args['replace'],
-            "extensions": acceptedExtensions,
+            "recursive": args["recursive"],
+            "overwrite": args["replace"],
+            "extensions": accepted_extensions,
             "framework": framework,
-            "components": args['components'],
-            "prefix": args['prefix'],
-            "folderConvert": Path(arg).is_dir(),
+            "components": args["components"],
+            "prefix": args["prefix"],
+            "folder_convert": Path(arg).is_dir(),
         }
     )
 
     # file?
     if Path(arg).is_file():
-        return consoleHelper.fileConvert(arg)
+        return console_helper.file_convert(arg)
 
     # folder ?
     if Path(arg).is_dir():
-        return consoleHelper.folderConvert(arg)
+        return console_helper.folder_convert(arg)
 
     # any html/css classes
-    return consoleHelper.codeConvert(arg)
+    return console_helper.code_convert(arg)
 
 
 if __name__ == "__main__":

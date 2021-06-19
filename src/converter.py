@@ -3,24 +3,31 @@ from .framework.bootstrap_framework import BootstrapFramework
 
 
 class Converter:
-    def __init__(self, content="", classesOnly: bool=False, generateComponents: bool=False, prefix="", framework="bootstrap"):
+    def __init__(
+        self,
+        content="",
+        classes_only: bool = False,
+        generate_components: bool = False,
+        prefix="",
+        framework="bootstrap",
+    ):
         self.changes = 0
-        self.isCssClassesOnly = classesOnly
-        self.generateComponents = generateComponents
+        self.is_css_classes_only = classes_only
+        self.generate_components = generate_components
         self.prefix = prefix
 
-        self.framework = self.setFramework(framework)
+        self.framework = self.set_framework(framework)
 
         if content:
-            self.setContent(content)
+            self.set_content(content)
 
-    def setContent(self, content: str):
-        self.givenContent = content
-        self.lastSearches = []
+    def set_content(self, content: str):
+        self.given_content = content
+        self.last_searches = []
         self.components = []
         return self
 
-    def setFramework(self, framework: str):
+    def set_framework(self, framework: str):
         """
         sets framework, 
         Only checks for to bootstrap...
@@ -30,9 +37,9 @@ class Converter:
 
         return self.framework
 
-    def classesOnly(self, value: bool):
+    def classes_only(self, value: bool):
         """Is the given content a CSS content or HTML content."""
-        self.isCssClassesOnly = value
+        self.is_css_classes_only = value
         return self
 
     # * The prefix option allows you to add a custom prefix to all of
@@ -44,32 +51,28 @@ class Converter:
     # *
     # * @return Converter
 
-    def setPrefix(self, prefix: str):
+    def set_prefix(self, prefix: str):
         prefix = prefix.strip()
         if prefix:
             self.prefix = prefix
 
         return self
 
-    def convert(self):
+    def convert(self, get_components=False) -> str:
         for item in self.framework.get():
             for search, replace in item.items():
-                self._searchAndReplace(search, replace)
+                self._search_and_replace(search, replace)
 
-        return self
+        if get_components:
+            return self.get_components()
 
-    def get(self, getComponents=False) -> str:
-        # * Get the converted content.
-        if getComponents:
-            return self.getComponents()
+        self.given_content = re.sub(r"{tailwindo\|([^}]+)}", "\1", self.given_content)
 
-        self.givenContent = re.sub(r"{tailwindo\|([^}]+)}", "\1", self.givenContent)
+        return self.given_content
 
-        return self.givenContent
-
-    def getComponents(self) -> str:
+    def get_components(self) -> str:
         result = ""
-        if not self.generateComponents:
+        if not self.generate_components:
             return result
 
         # TODO
@@ -82,7 +85,6 @@ class Converter:
 
         return result
 
-
     def changes(self) -> int:
         """Get the number of committed changes."""
         return self.changes
@@ -90,9 +92,9 @@ class Converter:
     #
     # * search for a word in the last searches.
     # */
-    def _isInLastSearches(self, searchFor: str, limit: int = 0) -> bool:
-        for i, search in enumerate(self.lastSearches):
-            if searchFor in search:
+    def _is_in_last_searches(self, search_for: str, limit: int = 0) -> bool:
+        for i, search in enumerate(self.last_searches):
+            if search_for in search:
                 return True
             if i >= limit and limit > 0:
                 return False
@@ -104,103 +106,104 @@ class Converter:
         r = re.sub(r"\\", "", r)
         return r
 
-    def _addToLastSearches(self, search):
+    def _add_to_last_searches(self, search):
         self.changes += 1
 
         search = self.stripslashes(search)
 
-        if self._isInLastSearches(search):
+        if self._is_in_last_searches(search):
             return
 
-        self.lastSearches = search
+        self.last_searches = search
 
-        if len(self.lastSearches) >= 50:
-            # array_shift(self.lastSearches)
-            self.lastSearches.pop(0)
-
-    
+        if len(self.last_searches) >= 50:
+            # array_shift(self.last_searches)
+            self.last_searches.pop(0)
 
     # * Search the given content and replace.
     # *
     # * @param string          $search
     # * @param string|\Closure $replace
     # */
-    def _searchAndReplace(self, search, replace) -> None:
+    def _search_and_replace(self, search, replace) -> None:
         # if ($replace instanceof \Closure):
         #     callableReplace = \Closure::bind($replace, self, self::class)
         #     replace = callableReplace()
 
-        regexStart = (
+        regex_start = (
             r"(?P<start>class(?:Name)?\s*=\s*(?P<quotation>[\"'])((?!(?P=quotation)).)*)"
-            if not self.isCssClassesOnly
+            if not self.is_css_classes_only
             else r"(?P<start>\s*)"
         )
         # "(?<end>((?!\k<quotation>).)*\k<quotation>)"
-        regexEnd = (
+        regex_end = (
             r"(?P<end>((?!(?P=quotation)).)*(?P=quotation))"
-            if not self.isCssClassesOnly
+            if not self.is_css_classes_only
             else r"(?P<end>\s*)"
         )
 
         # TODO OK?
-        #search = re.escape(search)
-        currentSubstitute = 0
+        # search = re.escape(search)
+        current_substitute = 0
 
         # TODO
         while True:
             # if (strpos($search, '{regex_string}') !== false || strpos($search, '{regex_number}') !== false) {
             if "{regex_string}" in search or "{regex_number}" in search:
-                currentSubstitute += 1
-                # for regexName, regexValue in ['regex_string'=> '[a-zA-Z0-9]+', 'regex_number' => '[0-9]+']:
-                for regexName, regexValue in {
-                    'regex_string': r'[a-zA-Z0-9]+',
-                    'regex_number': r'[0-9]+',
-                    }.items():
-                    regexMatchCount = len(re.findall(fr"{{{regexName}}}", search))
+                current_substitute += 1
+                # for regex_name, regex_value in ['regex_string'=> '[a-z_a-Z0-9]+', 'regex_number' => '[0-9]+']:
+                for regex_name, regex_value in {
+                    "regex_string": r"[a-zA-Z0-9]+",
+                    "regex_number": r"[0-9]+",
+                }.items():
+                    regex_match_count = len(re.findall(fr"{{{regex_name}}}", search))
                     search = re.sub(
-                        fr"{{{regexName}}}",
-                        f"(?P<{regexName}_{currentSubstitute}>{regexValue})",
+                        fr"{{{regex_name}}}",
+                        f"(?P<{regex_name}_{current_substitute}>{regex_value})",
                         search,
                         count=1,
                     )
 
                     replace = re.sub(
-                        fr"{{{regexName}}}",
-                        f"{{{regexName}_{currentSubstitute}}}",
+                        fr"{{{regex_name}}}",
+                        f"{{{regex_name}_{current_substitute}}}",
                         replace,
-                        count=(1 if regexMatchCount > 1 else 0),
+                        count=(1 if regex_match_count > 1 else 0),
                     )
             break
 
         matches = re.search(
-            fr"{regexStart}(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d])){regexEnd}",
-            self.givenContent,
+            fr"{regex_start}(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d])){regex_end}",
+            self.given_content,
         )
-        if not matches: return
+        if not matches:
+            return
 
         def evaluator(match):
 
-            #print(match)
+            # print(match)
             _replace = re.sub(
                 "{regex_(string|number)_(\d+)}",
                 lambda m: match[f"regex_{m[1]}_{m[2]}"],
                 replace,
             )
 
-            if self.generateComponents and match["given"] not in self.components:
+            if self.generate_components and match["given"] not in self.components:
                 self.components[match["given"]] = re.sub(
                     "{tailwindo\|([^}]+)}", "\1", replace
                 )
 
             def fn(css_class):
                 try:
-                    idx = css_class.index(':')
+                    idx = css_class.index(":")
                 except ValueError:
                     idx = 0
-                responsiveOrStatePrefix = css_class[:idx]
-                if responsiveOrStatePrefix:
-                    utilityName = css_class.replace(responsiveOrStatePrefix + ":", "")
-                    return f"{responsiveOrStatePrefix}:{self.prefix}{utilityName}"
+                responsive_or_state_prefix = css_class[:idx]
+                if responsive_or_state_prefix:
+                    utility_name = css_class.replace(
+                        responsive_or_state_prefix + ":", ""
+                    )
+                    return f"{responsive_or_state_prefix}:{self.prefix}{utility_name}"
                 elif css_class:
                     return f"{self.prefix}{css_class}"
                 return css_class
@@ -210,9 +213,10 @@ class Converter:
                 arr = list(map(fn, arr))
                 # remove all nil items
                 # arr = list(filter(lambda x: x, arr))  # array_filter(arr)
-                return r' '.join(arr).strip()
+                return r" ".join(arr).strip()
 
             return _replace
+
         # unecessary loop??
         for match in matches.groups():
             result = re.sub(
@@ -226,5 +230,5 @@ class Converter:
                 if count and count > 1:
                     result = re.sub(r"{tailwindo\|.*?}", "", result, count - 1)
 
-                self.givenContent = self.givenContent.replace(matches[0], result)
-                self._addToLastSearches(search)
+                self.given_content = self.given_content.replace(matches[0], result)
+                self._add_to_last_searches(search)

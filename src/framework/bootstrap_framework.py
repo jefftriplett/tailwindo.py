@@ -2,11 +2,12 @@ from collections import defaultdict
 
 ### XXX TEMP XXX
 
+
 class BootstrapFramework:
     def __init__(self):
-        self.lastSearches = []
+        self.last_searches = []
         self._hidden = 0
-        self._mediaOptions = {
+        self._media_options = {
             "xs": "sm",
             "sm": "sm",
             "md": "md",
@@ -49,7 +50,6 @@ class BootstrapFramework:
             "muted": "gray-700",
         }
 
-
     @property
     def name(self) -> str:
         return "Bootstrap"
@@ -68,7 +68,7 @@ class BootstrapFramework:
      * This is the default css classes to be added to your main css file for compatibility.
     """
 
-    def defaultCSS(self) -> dict:
+    def default_css(self) -> dict:
 
         return {
             # https://getbootstrap.com/docs/4.4/content/reboot/
@@ -90,26 +90,26 @@ class BootstrapFramework:
             self.general(),
             self.grid(),
             self.borders(),
-            self.mediaObject(),
+            self.media_object(),
             self.colors(),
             self.display(),
             self.sizing(),
-            self.flexElements(),
+            self.flex_elements(),
             self.spacing(),
             self.text(),
             self.floats(),
             self.positioning(),
             self.visibility(),
             self.alerts(),
-            self.verticalAlignment(),
+            self.vertical_alignment(),
             self.badges(),
             self.breadcrumb(),
             self.buttons(),
             self.cards(),
             self.dropdowns(),
             self.forms(),
-            self.inputGroups(),
-            self.listGroups(),
+            self.input_groups(),
+            self.list_groups(),
             self.modals(),
             self.navs(),
             self.pagination(),
@@ -117,12 +117,12 @@ class BootstrapFramework:
             yield component
 
     def general(self) -> dict:
-        mainClasses = {
+        main_classes = {
             "container-fluid": "container max-w-full mx-auto sm:px-4",
             "container": "container mx-auto sm:px-4",
             #  """
             #  => function () {
-            #  if (self.isInLastSearches('jumbotron', 1)) {
+            #  if (self.is_in_last_searches('jumbotron', 1)) {
             #      return 'container mx-auto max-w-2xl sm:px-4';
             #  }
             #  return 'container mx-auto sm:px-4';
@@ -167,23 +167,23 @@ class BootstrapFramework:
             "jumbotron-fluid": "pr-0 pl-0 rounded-none",
         }
 
-        # mainClassesEachScreen = {
+        # main_classes_each_screen = {
         #     'container-{screen}': 'container min-w-{screen} mx-auto sm:px-4',
         #     }
 
         # items = []
-        # for (mainClasses as btClass => twClass) {
-        #     items[btClass] = twClass;
+        # for (main_classes as bt_class => tw_class) {
+        #     items[bt_class] = tw_class;
         # }
 
-        # for (mainClassesEachScreen as btClass => twClass) {
-        #     for (self.mediaOptions as btMedia => twMedia) {
-        #         items[btClass.replace('{screen}', btMedia)] = twClass.replace('{screen}', twMedia)
+        # for (main_classes_each_screen as bt_class => tw_class) {
+        #     for (self.media_options as bt_media => tw_media) {
+        #         items[bt_class.replace('{screen}', bt_media)] = tw_class.replace('{screen}', tw_media)
         #     }
         # }
 
         # return items
-        return mainClasses
+        return main_classes
 
     # TODO
     def grid(self) -> dict:
@@ -195,28 +195,30 @@ class BootstrapFramework:
         # col-(xs|sm|md|lg|xl) = (sm|md|lg|xl):flex-grow
         # ml-(xs|sm|md|lg|xl)-auto = (sm|md|lg|xl):mx-auto:ml-auto
         # mr-(xs|sm|md|lg|xl)-auto = (sm|md|lg|xl):mx-auto:mr-auto
-        for btMedia, twMedia in self._mediaOptions.items():
-            items["col-" + btMedia] = (
-                "relative " + twMedia + ":flex-grow " + twMedia + ":flex-1"
+        for bt_media, tw_media in self._media_options.items():
+            items["col-" + bt_media] = (
+                "relative " + tw_media + ":flex-grow " + tw_media + ":flex-1"
             )
-            items["ml-" + btMedia + "-auto"] = twMedia + ":ml-auto"
-            items["mr-" + btMedia + "-auto"] = twMedia + ":mr-auto"
+            items["ml-" + bt_media + "-auto"] = tw_media + ":ml-auto"
+            items["mr-" + bt_media + "-auto"] = tw_media + ":mr-auto"
 
-            # col-btElem
-            # col-(xs|sm|md|lg|xl)-btElem = (sm|md|lg|xl):w-twElem
-            # offset-(xs|sm|md|lg|xl)-btElem = (sm|md|lg|xl):mx-auto
-            for btElem, twElem in self._grid.items():
-                if btMedia == "xs":
-                    items["col-" + btElem] = "w-" + twElem
+            # col-bt_elem
+            # col-(xs|sm|md|lg|xl)-bt_elem = (sm|md|lg|xl):w-tw_elem
+            # offset-(xs|sm|md|lg|xl)-bt_elem = (sm|md|lg|xl):mx-auto
+            for bt_elem, tw_elem in self._grid.items():
+                if bt_media == "xs":
+                    items["col-" + bt_elem] = "w-" + tw_elem
                 items[
-                    "col-" + btMedia + "-" + btElem
-                ] = f"{twMedia}:w-{twElem} pr-4 pl-4"
+                    "col-" + bt_media + "-" + bt_elem
+                ] = f"{tw_media}:w-{tw_elem} pr-4 pl-4"
 
                 # might work :)
-                items["offset-" + btMedia + "-" + btElem] = twMedia + ":mx-" + twElem
+                items["offset-" + bt_media + "-" + bt_elem] = (
+                    tw_media + ":mx-" + tw_elem
+                )
         return items
 
-    def mediaObject(self) -> dict:
+    def media_object(self) -> dict:
         # http://getbootstrap.com/docs/4.0/layout/media-object/
         return {
             "media": "flex items-start",
@@ -232,12 +234,12 @@ class BootstrapFramework:
             "bottom": "b",
             "left": "l",
         }
-        for btSide, twSide in side.items():
-            items[f"border-{btSide}"] = f"border-{twSide}"
-            items[f"border-{btSide}-0"] = f"border-{twSide}-0"
+        for bt_side, tw_side in side.items():
+            items[f"border-{bt_side}"] = f"border-{tw_side}"
+            items[f"border-{bt_side}-0"] = f"border-{tw_side}-0"
 
-        for btColor, twColor in self._colors.items():
-            items[f"border-{btColor}"] = f"border-{twColor}"
+        for bt_color, tw_color in self._colors.items():
+            items[f"border-{bt_color}"] = f"border-{tw_color}"
 
         style = {
             "top": "t",
@@ -248,19 +250,19 @@ class BootstrapFramework:
             "pill": "full py-2 px-4",
             "0": "none",
         }
-        for btStyle, twStyle in style.items():
-            items["rounded-" + btStyle] = "rounded-" + twStyle
+        for bt_style, tw_style in style.items():
+            items["rounded-" + bt_style] = "rounded-" + tw_style
 
         return items
 
     def colors(self) -> dict:
         items = defaultdict(str)
 
-        for btColor, twColor in self._colors.items():
-            items[f"text-{btColor}"] = f"text-{twColor}"
-            items[f"bg-{btColor}"] = f"bg-{twColor}"
-            items[f"table-{btColor}"] = f"bg-{twColor}"
-            # items[f'bg-gradient-{btColor}'] = f'bg-{twColor}';
+        for bt_color, tw_color in self._colors.items():
+            items[f"text-{bt_color}"] = f"text-{tw_color}"
+            items[f"bg-{bt_color}"] = f"bg-{tw_color}"
+            items[f"table-{bt_color}"] = f"bg-{tw_color}"
+            # items[f'bg-gradient-{bt_color}'] = f'bg-{tw_color}';
 
         return items
 
@@ -280,46 +282,80 @@ class BootstrapFramework:
             "flex": "flex",
             "inline-flex": "inline-flex",
         }
-        for btElem, twElem in elem.items():
-            items[f"d-{btElem}"] = twElem
+        for bt_elem, tw_elem in elem.items():
+            items[f"d-{bt_elem}"] = tw_elem
 
-            for btMedia, twMedia in self._mediaOptions.items():
-                items[f"d-{btMedia}-{btElem}"] = f"{twMedia}:{twElem}"
+            for bt_media, tw_media in self._media_options.items():
+                items[f"d-{bt_media}-{bt_elem}"] = f"{tw_media}:{tw_elem}"
 
         return items
 
     # TODO
-    def flexElements(self) -> dict:
+    def flex_elements(self) -> dict:
         items = defaultdict(str)
 
-        self._mediaOptions[""] = ""
-        for btMedia, twMedia in self._mediaOptions.items():
-            for key in ['row', 'row-reverse', 'column', 'column-reverse']:
-                items['flex'+('' if not btMedia else '-')+btMedia+'-'+key] = ('' if not twMedia else twMedia+':')+'flex-'+key.replace('column', 'col')
+        self._media_options[""] = ""
+        for bt_media, tw_media in self._media_options.items():
+            for key in ["row", "row-reverse", "column", "column-reverse"]:
+                items["flex" + ("" if not bt_media else "-") + bt_media + "-" + key] = (
+                    ("" if not tw_media else tw_media + ":")
+                    + "flex-"
+                    + key.replace("column", "col")
+                )
 
-            for key in ['grow-0', 'grow-1', 'shrink-0', 'shrink-1']:
-                items['flex'+('' if not btMedia else '-')+btMedia+'-'+key] = ('' if not twMedia else twMedia+':')+'flex-'+key.replace('-1', '')
+            for key in ["grow-0", "grow-1", "shrink-0", "shrink-1"]:
+                items["flex" + ("" if not bt_media else "-") + bt_media + "-" + key] = (
+                    ("" if not tw_media else tw_media + ":")
+                    + "flex-"
+                    + key.replace("-1", "")
+                )
 
-            for key in ['start', 'end', 'center', 'between', 'around']:
-                items['justify-content'+('' if not btMedia else '-')+btMedia+'-'+key] = ('' if not twMedia else twMedia+':')+'justify-'+key;
+            for key in ["start", "end", "center", "between", "around"]:
+                items[
+                    "justify-content"
+                    + ("" if not bt_media else "-")
+                    + bt_media
+                    + "-"
+                    + key
+                ] = (("" if not tw_media else tw_media + ":") + "justify-" + key)
 
-            for key in ['start', 'end', 'center', 'stretch', 'baseline']:
-                items['align-items'+('' if not btMedia else '-')+btMedia+'-'+key] = ('' if not twMedia else twMedia+':')+'items-'+key;
+            for key in ["start", "end", "center", "stretch", "baseline"]:
+                items[
+                    "align-items" + ("" if not bt_media else "-") + bt_media + "-" + key
+                ] = (("" if not tw_media else tw_media + ":") + "items-" + key)
 
-            for key in ['start', 'end', 'center', 'stretch', 'baseline']:
-                items['align-content'+('' if not btMedia else '-')+btMedia+'-'+key] = ('' if not twMedia else twMedia+':')+'content-'+key;
+            for key in ["start", "end", "center", "stretch", "baseline"]:
+                items[
+                    "align-content"
+                    + ("" if not bt_media else "-")
+                    + bt_media
+                    + "-"
+                    + key
+                ] = (("" if not tw_media else tw_media + ":") + "content-" + key)
 
-            for key in ['start', 'end', 'center', 'stretch', 'baseline']:
-                items['align-self'+('' if not btMedia else '-')+btMedia+'-'+key] = ('' if not twMedia else twMedia+':')+'self-'+key;
+            for key in ["start", "end", "center", "stretch", "baseline"]:
+                items[
+                    "align-self" + ("" if not bt_media else "-") + bt_media + "-" + key
+                ] = (("" if not tw_media else tw_media + ":") + "self-" + key)
 
-            items['flex'+('' if not btMedia else '-')+btMedia+'-wrap'] = ('' if not twMedia else twMedia+':')+'flex-wrap';
-            items['flex'+('' if not btMedia else '-')+btMedia+'-wrap-reverse'] = ('' if not twMedia else twMedia+':')+'flex-wrap-reverse';
-            items['flex'+('' if not btMedia else '-')+btMedia+'-nowrap'] = ('' if not twMedia else twMedia+':')+'flex-no-wrap';
+            items["flex" + ("" if not bt_media else "-") + bt_media + "-wrap"] = (
+                "" if not tw_media else tw_media + ":"
+            ) + "flex-wrap"
+            items[
+                "flex" + ("" if not bt_media else "-") + bt_media + "-wrap-reverse"
+            ] = ("" if not tw_media else tw_media + ":") + "flex-wrap-reverse"
+            items["flex" + ("" if not bt_media else "-") + bt_media + "-nowrap"] = (
+                "" if not tw_media else tw_media + ":"
+            ) + "flex-no-wrap"
 
-            items['flex'+('' if not btMedia else '-')+btMedia+'-nowrap'] = ('' if not twMedia else twMedia+':')+'flex-no-wrap';
+            items["flex" + ("" if not bt_media else "-") + bt_media + "-nowrap"] = (
+                "" if not tw_media else tw_media + ":"
+            ) + "flex-no-wrap"
 
-            if btMedia != '':
-                items['order-'+btMedia+'-{regex_number}'] = twMedia+':order-{regex_number}'
+            if bt_media != "":
+                items["order-" + bt_media + "-{regex_number}"] = (
+                    tw_media + ":order-{regex_number}"
+                )
 
         return items
 
@@ -329,43 +365,49 @@ class BootstrapFramework:
             "mh-100": "max-h-full",
         }
 
-        for btClass, twClass in [
+        for bt_class, tw_class in [
             ("25", "1/4"),
             ("50", "1/2"),
             ("75", "3/4"),
             ("100", "full"),
         ]:
-            items[f"w-{btClass}"] = f"w-{twClass}"
+            items[f"w-{bt_class}"] = f"w-{tw_class}"
 
             # no percentages in TW for heights except for full
-            if btClass == "100":
-                items[f"h-{btClass}"] = f"h-{twClass}"
+            if bt_class == "100":
+                items[f"h-{bt_class}"] = f"h-{tw_class}"
         return items
 
     def spacing(self):
         items = defaultdict(str)
-        spacingProperties = ['p', 'm']
+        spacing_properties = ["p", "m"]
 
-        for prop in spacingProperties:
-            for btSpacing, twSpacing in self._spacings.items():
-                items[f"{prop}-{btSpacing}"] = f'{prop}-{twSpacing}'
+        for prop in spacing_properties:
+            for bt_spacing, tw_spacing in self._spacings.items():
+                items[f"{prop}-{bt_spacing}"] = f"{prop}-{tw_spacing}"
 
-        for prop in spacingProperties:
-            for btMedia, twMedia in self._mediaOptions.items():
-                for btSpacing, twSpacing in self._spacings.items():
-                    items[f'{prop}-{btMedia}-{btSpacing}'] = f'{twMedia}:{prop}-{twSpacing}'
-                    items[f'{prop}{{regex_string}}-{btMedia}-{btSpacing}'] = f'{twMedia}:{prop}{{regex_string}}-{twSpacing}'
+        for prop in spacing_properties:
+            for bt_media, tw_media in self._media_options.items():
+                for bt_spacing, tw_spacing in self._spacings.items():
+                    items[
+                        f"{prop}-{bt_media}-{bt_spacing}"
+                    ] = f"{tw_media}:{prop}-{tw_spacing}"
+                    items[
+                        f"{prop}{{regex_string}}-{bt_media}-{bt_spacing}"
+                    ] = f"{tw_media}:{prop}{{regex_string}}-{tw_spacing}"
 
-                items[f'{prop}{{regex_string}}-{btMedia}-auto'] = f'{twMedia}:{prop}{{regex_string}}-auto'
+                items[
+                    f"{prop}{{regex_string}}-{bt_media}-auto"
+                ] = f"{tw_media}:{prop}{{regex_string}}-auto"
 
         return items
 
     def floats(self):
         items = defaultdict(str)
 
-        for btMedia, twMedia in self._mediaOptions.items():
+        for bt_media, tw_media in self._media_options.items():
             for alignment in ["left", "right", "none"]:
-                items[f"float-{btMedia}-{alignment}"] = f"{twMedia}:float-{alignment}"
+                items[f"float-{bt_media}-{alignment}"] = f"{tw_media}:float-{alignment}"
 
         return items
 
@@ -398,12 +440,12 @@ class BootstrapFramework:
             "font-italic": "italic",
         }
 
-        self._mediaOptions[""] = ""
+        self._media_options[""] = ""
         for alignment in ["left", "right", "center", "justify"]:
-            for btMedia, twMedia in self._mediaOptions.items():
+            for bt_media, tw_media in self._media_options.items():
                 items[
-                    "text" + ("" if not btMedia else f"-{btMedia}") + f"-{alignment}"
-                ] = ("" if not twMedia else f"{twMedia}:") + f"text-{alignment}"
+                    "text" + ("" if not bt_media else f"-{bt_media}") + f"-{alignment}"
+                ] = ("" if not tw_media else f"{tw_media}:") + f"text-{alignment}"
         return items
 
     def positioning(self):
@@ -419,7 +461,7 @@ class BootstrapFramework:
 
         return items
 
-    def verticalAlignment(self):
+    def vertical_alignment(self):
         # same bt <> tw
         return defaultdict()
 
@@ -446,8 +488,8 @@ class BootstrapFramework:
             ("dark", "bg-gray-400 border-gray-500 text-gray-900"),
         ]
 
-        for btColor, twColor in colors:
-            items[f"alert-{btColor}"] = twColor
+        for bt_color, tw_color in colors:
+            items[f"alert-{bt_color}"] = tw_color
 
         return items
 
@@ -468,8 +510,8 @@ class BootstrapFramework:
             ("dark", "bg-gray-900 text-white"),
         ]
 
-        for btColor, twColor in colors:
-            items[f"badge-{btColor}"] = twColor
+        for bt_color, tw_color in colors:
+            items[f"badge-{bt_color}"] = tw_color
 
         return items
 
@@ -493,9 +535,9 @@ class BootstrapFramework:
         # for ([
         #     'sm' => '{tailwindo|py-1 px-2 leading-tight} text-xs ',
         #     'lg' => '{tailwindo|py-3 px-4 leading-tight} text-xl',
-        # ] as btMedia => twClasses) {
-        #     items['btn-'.btMedia] = twClasses;
-        #     items['btn-group-'.btMedia] = twClasses;
+        # ] as bt_media => tw_classes) {
+        #     items['btn-'.bt_media] = tw_classes;
+        #     items['btn-group-'.bt_media] = tw_classes;
         # }
 
         colors = [
@@ -509,9 +551,9 @@ class BootstrapFramework:
             ("dark", "bg-gray-900 text-white hover:bg-gray-900"),
         ]
 
-        # for btColor, twColor in colors:
-        #     items[f'btn-{btColor}'] = twColor # TODO XXX Below XXX
-        #     items[f'btn-outline-{btColor}'] = preg_replace_callback('/(?<!hover:)(text-[^\s]+|bg-[^\s]+)/i', function (m) {
+        # for bt_color, tw_color in colors:
+        #     items[f'btn-{bt_color}'] = tw_color # TODO XXX Below XXX
+        #     items[f'btn-outline-{bt_color}'] = preg_replace_callback('/(?<!hover:)(text-[^\s]+|bg-[^\s]+)/i', function (m) {
         #         if (strpos(m[1], 'bg-') !== false) {
         #             color = m[1].replace('bg-', '')
 
@@ -519,13 +561,13 @@ class BootstrapFramework:
         #         } else {
         #             return 'bg-white';
         #         }
-        #     }, twColor);
+        #     }, tw_color);
         # }
 
         return items
 
     # ???  TODO?
-    def isInLastSearches(self, thing, idx):
+    def is_in_last_searches(self, thing, idx):
         return
 
     def cards(self):
@@ -534,7 +576,7 @@ class BootstrapFramework:
             "card-group": "flex flex-col",
             "card": (
                 "relative block md:flex w-full md:min-w-0 md:mx-4 flex-col flex-no-shrink flex-grow rounded break-words border bg-white border-1 border-gray-300"
-                if self.isInLastSearches("card-deck", None)
+                if self.is_in_last_searches("card-deck", None)
                 else "relative flex flex-col min-w-0 rounded break-words border bg-white border-1 border-gray-300"
             ),
             "card-body": "flex-auto p-6",
@@ -591,7 +633,7 @@ class BootstrapFramework:
             "is-invalid": "bg-red-700",
         }
 
-    def inputGroups(self):
+    def input_groups(self):
         return {
             "input-group": "relative flex items-stretch w-full",
             "input-group-addon": "py-1 px-2 mb-1 text-base font-normal leading-normal text-gray-900 text-center bg-gray-300 border border-4 border-gray-100 rounded",
@@ -599,7 +641,7 @@ class BootstrapFramework:
             "input-group-addon-sm": "py-3 px-4 mb-0 text-lg",
         }
 
-    def listGroups(self):
+    def list_groups(self):
 
         items = {
             "list-group": "flex flex-col pl-0 mb-0 border rounded border-gray-300",
@@ -609,15 +651,15 @@ class BootstrapFramework:
         }
 
         # TODO
-        for btColor, twColor in self._colors.items():
-            if btColor == "dark":
-                items[f"list-group-item-{btColor}"] = "text-white bg-gray-700"
-            elif btColor == "light":
-                items[f"list-group-item-{btColor}"] = "text-black bg-gray-200"
+        for bt_color, tw_color in self._colors.items():
+            if bt_color == "dark":
+                items[f"list-group-item-{bt_color}"] = "text-white bg-gray-700"
+            elif bt_color == "light":
+                items[f"list-group-item-{bt_color}"] = "text-black bg-gray-200"
             else:
                 items[
-                    f"list-group-item-{btColor}"
-                ] = f"bg-{twColor}-200 text-{twColor}-900"
+                    f"list-group-item-{bt_color}"
+                ] = f"bg-{tw_color}-200 text-{tw_color}-900"
 
         return items
 
@@ -638,22 +680,22 @@ class BootstrapFramework:
             "inline-block py-2 px-4 no-underline"
             + (
                 " border border-b-0 mx-1 rounded rounded-t"
-                if self.isInLastSearches("nav-tabs", 5)
+                if self.is_in_last_searches("nav-tabs", 5)
                 else ""
             )
             + (
                 " border border-blue bg-blue rounded text-white mx-1"
-                if self.isInLastSearches("nav-pills", 5)
+                if self.is_in_last_searches("nav-pills", 5)
                 else ""
             )
         )
 
         items["nav-item"] = ""
-        if self.isInLastSearches("nav-tabs", 5):
+        if self.is_in_last_searches("nav-tabs", 5):
             items["nav-item"] += "-mb-px"
-        elif self.isInLastSearches("nav-fill", 5):
+        elif self.is_in_last_searches("nav-fill", 5):
             items["nav-item"] += " flex-auto text-center"
-        elif self.isInLastSearches("nav-justified", 5):
+        elif self.is_in_last_searches("nav-justified", 5):
             items["nav-item"] += " flex-grow text-center"
 
         items[
