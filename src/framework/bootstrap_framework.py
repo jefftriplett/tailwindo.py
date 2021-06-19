@@ -50,10 +50,12 @@ class BootstrapFramework:
         }
 
 
-    def frameworkName(self) -> str:
+    @property
+    def name(self) -> str:
         return "Bootstrap"
 
-    def supportedVersion(self) -> list:
+    @property
+    def supported_version(self) -> list:
         """
          * latest versions of Bootstrap/Tailwind during the coding of this file.
         """

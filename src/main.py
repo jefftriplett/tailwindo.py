@@ -15,7 +15,7 @@ class ConsoleHelper:
         self._folderConvert = settings["folderConvert"] or False
 
     def folderConvert(self, folderPath: str):
-        frameworkVersion, TailwindVersion = self.converter.framework.supportedVersion()
+        frameworkVersion, TailwindVersion = self.converter.framework.supported_version
         folderPath = Path(folderPath)
 
         print(
@@ -26,7 +26,7 @@ class ConsoleHelper:
         )
         print(
             f"{Colors.OKGREEN}Converting from{Colors.ENDC} "
-            + self.converter.framework.frameworkName()
+            + self.converter.framework.name
             + " "
             + frameworkVersion
             + f" {Colors.OKGREEN}to{Colors.ENDC} Tailwind "
@@ -65,10 +65,10 @@ class ConsoleHelper:
             (
                 frameworkVersion,
                 TailwindVersion,
-            ) = self.converter.framework.supportedVersion()
+            ) = self.converter.framework.supported_version
             print(
                 f"{Colors.OKGREEN}Converting from{Colors.ENDC} "
-                + self.converter.framework.frameworkName()
+                + self.converter.framework.name
                 + " "
                 + frameworkVersion
                 + f" {Colors.OKGREEN}to{Colors.ENDC} Tailwind "

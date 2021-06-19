@@ -77,7 +77,7 @@ class Converter:
             if selector == classes:
                 continue
 
-            # impove??
+            # improve??
             result += "".join([".", selector, "{\n\t@apply ", classes, ";\n}\n"])
 
         return result
