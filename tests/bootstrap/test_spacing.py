@@ -174,7 +174,3 @@ class TestSpacing(unittest.TestCase):
         self.assertEqual(
             "lg:my-0", self.converter.set_content("my-lg-0").convert(),
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

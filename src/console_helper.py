@@ -1,7 +1,8 @@
-from pathlib import Path
 from datetime import date
-from .converter import Converter
+from pathlib import Path
+
 from .color import Colors
+from .converter import Converter
 
 
 class ConsoleHelper:
@@ -14,10 +15,10 @@ class ConsoleHelper:
         self._folder_convert = settings["folder_convert"] or False
 
         self.converter = Converter(
-                generate_components=settings["components"],
-                prefix=settings["prefix"],
-                framework=settings["framework"],
-                )
+            generate_components=settings["components"],
+            prefix=settings["prefix"],
+            framework=settings["framework"],
+        )
 
     def folder_convert(self, folder_path: str):
         framework_version, tailwind_version = self.converter.framework.supported_version
@@ -52,7 +53,7 @@ class ConsoleHelper:
                 self.file_convert(child.resolve())
 
     @staticmethod
-    def rreplace(s, old, new, offset):
+    def rreplace(s: str, old: str, new: str, offset: int) -> str:
         lst = s.rsplit(old, offset)
         return new.join(lst)
 
@@ -118,8 +119,7 @@ class ConsoleHelper:
 
     def code_convert(self, code: str):
         converted_code = (
-            self.converter
-            .classes_only(("<" not in code and ">" not in code))
+            self.converter.classes_only(("<" not in code and ">" not in code))
             .set_content(code)
             .convert(self.components)
         )

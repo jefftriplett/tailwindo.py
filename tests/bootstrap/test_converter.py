@@ -1,4 +1,5 @@
 import unittest
+
 from src.converter import Converter
 
 
@@ -39,7 +40,3 @@ class TestConverter(unittest.TestCase):
                 '<a className="d-sm-flex text-muted">love</a>'
             ).convert(),
         )
-
-
-# if __name__ == '__main__':
-#    unittest.main()

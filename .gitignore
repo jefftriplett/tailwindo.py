@@ -4,3 +4,6 @@ ref
 __pycache__
 example
 todo.*
+coverage/
+htmlcov/
+.coverage

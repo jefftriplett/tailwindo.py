@@ -1,5 +1,6 @@
 import re
 from collections import defaultdict
+
 from .framework.bootstrap_framework import BootstrapFramework
 
 
@@ -22,7 +23,7 @@ class Converter:
         if content:
             self.set_content(content)
 
-    def set_content(self, content: str):
+    def set_content(self, content: str) -> "Converter":
         self.given_content = content
         self.last_searches = []
         self.components = defaultdict(str)
@@ -38,12 +39,12 @@ class Converter:
 
         return self.framework
 
-    def classes_only(self, value: bool):
+    def classes_only(self, value: bool) -> "Converter":
         """Is the given content a CSS content or HTML content."""
         self.is_css_classes_only = value
         return self
 
-    def set_prefix(self, prefix: str):
+    def set_prefix(self, prefix: str) -> "Converter":
         """
         The prefix option allows you to add a custom prefix to all of
         Tailwind's generated utility classes. This can be really useful when
@@ -59,7 +60,7 @@ class Converter:
 
         return self
 
-    def convert(self, get_components=False) -> str:
+    def convert(self, get_components: bool = False) -> str:
         for item in self.framework.get():
             for search, replace in item.items():
                 self._search_and_replace(search, replace)
@@ -85,13 +86,6 @@ class Converter:
 
         return result
 
-    def changes(self) -> int:
-        """Get the number of committed changes."""
-        return self.changes
-
-    #
-    # * search for a word in the last searches.
-    # */
     def _is_in_last_searches(self, search_for: str, limit: int = 0) -> bool:
         """
         Search for a word in the last searches
@@ -113,7 +107,7 @@ class Converter:
         r = re.sub(r"\\", "", r)
         return r
 
-    def _add_to_last_searches(self, search):
+    def _add_to_last_searches(self, search: str) -> None:
         self.changes += 1
 
         search = self.stripslashes(search)
@@ -127,7 +121,7 @@ class Converter:
             # use deque.popleft() ?
             self.last_searches.pop(0)
 
-    def _search_and_replace(self, search, replace) -> None:
+    def _search_and_replace(self, search: str, replace: str) -> None:
         """
         Search the given content and replace
         :param search: 
@@ -148,7 +142,6 @@ class Converter:
             else r"(?P<end>\s*)"
         )
 
-        search = re.escape(search)
         current_substitute = 0
 
         # TODO
@@ -221,9 +214,7 @@ class Converter:
         # unecessary loop?
         # for match in matches.groups():
         result = re.sub(
-            fr"(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d]))",
-            evaluator,
-            matches[0],
+            fr"(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d]))", evaluator, matches[0],
         )
 
         if matches[0] != result:

@@ -1,4 +1,5 @@
 import unittest
+
 from src.converter import Converter
 
 
@@ -13,7 +14,3 @@ class TestText(unittest.TestCase):
         self.assertEqual(
             "lg:text-justify", self.converter.set_content("text-lg-justify").convert()
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

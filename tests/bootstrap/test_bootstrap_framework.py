@@ -1,6 +1,7 @@
 import unittest
-from src.framework.bootstrap_framework import BootstrapFramework
+
 from src.converter import Converter
+from src.framework.bootstrap_framework import BootstrapFramework
 
 
 class TestBootstrapFramework(unittest.TestCase):
@@ -16,7 +17,3 @@ class TestBootstrapFramework(unittest.TestCase):
                 if "--" in search:
                     match_array.append(search)
         return self.assertEqual(match_array, [])
-
-
-if __name__ == "__main__":
-    unittest.main()

@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+
 class BootstrapFramework:
     def __init__(self):
         self.last_searches = []
@@ -350,7 +351,7 @@ class BootstrapFramework:
                 items["order-" + bt_media + "-{regex_number}"] = (
                     tw_media + ":order-{regex_number}"
                 )
-        del self._media_options[""] # a better way??
+        del self._media_options[""]  # a better way??
         return items
 
     def sizing(self):
@@ -440,7 +441,7 @@ class BootstrapFramework:
                 items[
                     "text" + ("" if not bt_media else f"-{bt_media}") + f"-{alignment}"
                 ] = ("" if not tw_media else f"{tw_media}:") + f"text-{alignment}"
-        del self._media_options[""] # a better way??
+        del self._media_options[""]  # a better way??
         return items
 
     def positioning(self):
@@ -555,8 +556,8 @@ class BootstrapFramework:
         # for bt_color, tw_color in colors:
         #     items[f'btn-{bt_color}'] = tw_color # TODO XXX Below XXX
         #     items[f'btn-outline-{bt_color}'] = re.sub(
-        #           r'(?P<!hover:)(text-[^\s]+|bg-[^\s]+)', 
-        #           _replace, 
+        #           r'(?P<!hover:)(text-[^\s]+|bg-[^\s]+)',
+        #           _replace,
         #           tw_color
         #           )
 
