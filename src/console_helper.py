@@ -52,11 +52,6 @@ class ConsoleHelper:
             if self._is_convertible_file(extension):
                 self.file_convert(child.resolve())
 
-    @staticmethod
-    def rreplace(s: str, old: str, new: str, offset: int) -> str:
-        lst = s.rsplit(old, offset)
-        return new.join(lst)
-
     def file_convert(self, file_path):
         file_path = Path(file_path).resolve()
 
