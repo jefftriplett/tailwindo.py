@@ -2,14 +2,16 @@
 
 import argparse
 import configparser
+import sys
 from pathlib import Path
 from src.color import Colors
-from src.main import ConsoleHelper
+from src.console_helper import ConsoleHelper
 
 
 def get_parser():
-
-    parser = argparse.ArgumentParser(description="totailwind")
+    parser = argparse.ArgumentParser(
+            description=f"{Colors.BOLD}{Colors.UNDERLINE}{Colors.OKBLUE}Tailwindo{Colors.ENDC} Convert CSS frameworks to Tailwind"
+            )
     # positional arg
     parser.add_argument("arg", help="a file path/a folder path/Bootstrap CSS classes")
     parser.add_argument(
@@ -33,23 +35,19 @@ def get_parser():
     )
     parser.add_argument(
         "-e",
-        "--extensions",
         dest="extensions",
         help="This allows for custom extensions ex: '.jsx' ",
         type=str,
-        default=".php,.html",
+        default=".php,.html,.jsx",
     )
     parser.add_argument(
         "-t",
-        "--framework",
         dest="framework",
         help="CSS Framework type to convert",
-        type=str,
         default="bootstrap",
     )
     parser.add_argument(
         "-p",
-        "--prefix",
         dest="prefix",
         help="This allows you to add a custom prefix to all of Tailwind's generated utility classes",
         type=str,
@@ -71,10 +69,9 @@ def main():
 
     framework = args["framework"].lower()
 
-    # # if (! class_exists('Awssat\\Tailwindo\\Framework\\' . ucfirst(framework).'Framework')):
-    # if f'{framework.capitalize()}Framework' not in dir():
-    #     print(f"{Colors.WARNING}Oops! {framework} is not supported!{Colors.ENDC}")
-    #     return -1
+    if f"src.framework.{framework}_framework" not in sys.modules:
+        print(f"{Colors.WARNING}Oops! {framework} is not supported!{Colors.ENDC}")
+        return -1
 
     console_helper = ConsoleHelper(
         {

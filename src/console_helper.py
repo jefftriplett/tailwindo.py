@@ -6,13 +6,18 @@ from .color import Colors
 
 class ConsoleHelper:
     def __init__(self, settings):
-        self.converter = Converter()
 
         self.recursive = settings["recursive"] or False
         self.overwrite = settings["overwrite"] or False
         self.extensions = settings["extensions"] or {".php", ".html"}
         self.components = settings["components"] or False
         self._folder_convert = settings["folder_convert"] or False
+
+        self.converter = Converter(
+                generate_components=settings["components"],
+                prefix=settings["prefix"],
+                framework=settings["framework"],
+                )
 
     def folder_convert(self, folder_path: str):
         framework_version, tailwind_version = self.converter.framework.supported_version
@@ -89,7 +94,7 @@ class ConsoleHelper:
         if not self.overwrite:
             new_file_path = file_path.with_suffix(".tw")
         else:
-            # // Set the new path to the old path to make sure we overwrite it
+            # Set the new path to the old path to make sure we overwrite it
             new_file_path = file_path
 
         _new_content = self.converter.set_content(content).convert(self.components)
@@ -113,8 +118,9 @@ class ConsoleHelper:
 
     def code_convert(self, code: str):
         converted_code = (
-            self.converter.set_content(code)
-            .classes_only("<" not in code and ">" not in code)
+            self.converter
+            .classes_only(("<" not in code and ">" not in code))
+            .set_content(code)
             .convert(self.components)
         )
 
@@ -126,9 +132,6 @@ class ConsoleHelper:
                 f"or it has exactly classes with the same name.{Colors.ENDC}"
             )
 
-    # *
-    # * Check whether a file is convertible or not based on its extension.
-    # */
     # protected
     def _is_convertible_file(self, extension: str) -> bool:
         """ checks extension is in the list of convertible extensions """
@@ -138,6 +141,7 @@ class ConsoleHelper:
     def _write_components_to_file(self, code, path):
         css_file_path = f"{path}/tailwindo-components.css"
         with open(css_file_path, "a") as f:
+            f.write(code)
             f.write("\n")
 
     # protected

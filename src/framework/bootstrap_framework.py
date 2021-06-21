@@ -1,8 +1,5 @@
 from collections import defaultdict
 
-### XXX TEMP XXX
-
-
 class BootstrapFramework:
     def __init__(self):
         self.last_searches = []
@@ -82,10 +79,10 @@ class BootstrapFramework:
             "p": "",
         }
 
-    #
-    # .get all convertible items.
-    #
-    def get(self):  # ?\Generator
+    def get(self):  #  -> Generator[]
+        """
+        .get all convertible items.
+        """
         for component in [
             self.general(),
             self.grid(),
@@ -171,16 +168,13 @@ class BootstrapFramework:
         #     'container-{screen}': 'container min-w-{screen} mx-auto sm:px-4',
         #     }
 
-        # items = []
-        # for (main_classes as bt_class => tw_class) {
-        #     items[bt_class] = tw_class;
-        # }
+        # items = defaultdict(str)
+        # for bt_class, tw_class in main_classes.items():
+        #     items[bt_class] = tw_class
 
-        # for (main_classes_each_screen as bt_class => tw_class) {
-        #     for (self.media_options as bt_media => tw_media) {
+        # for bt_class, tw_class in main_classes_each_screen.items():
+        #     for bt_media, tw_media in self._media_options.items():
         #         items[bt_class.replace('{screen}', bt_media)] = tw_class.replace('{screen}', tw_media)
-        #     }
-        # }
 
         # return items
         return main_classes
@@ -290,11 +284,11 @@ class BootstrapFramework:
 
         return items
 
-    # TODO
     def flex_elements(self) -> dict:
         items = defaultdict(str)
 
         self._media_options[""] = ""
+
         for bt_media, tw_media in self._media_options.items():
             for key in ["row", "row-reverse", "column", "column-reverse"]:
                 items["flex" + ("" if not bt_media else "-") + bt_media + "-" + key] = (
@@ -356,7 +350,7 @@ class BootstrapFramework:
                 items["order-" + bt_media + "-{regex_number}"] = (
                     tw_media + ":order-{regex_number}"
                 )
-
+        del self._media_options[""] # a better way??
         return items
 
     def sizing(self):
@@ -446,6 +440,7 @@ class BootstrapFramework:
                 items[
                     "text" + ("" if not bt_media else f"-{bt_media}") + f"-{alignment}"
                 ] = ("" if not tw_media else f"{tw_media}:") + f"text-{alignment}"
+        del self._media_options[""] # a better way??
         return items
 
     def positioning(self):
@@ -532,13 +527,12 @@ class BootstrapFramework:
             "btn-block": "block w-full",
         }
 
-        # for ([
-        #     'sm' => '{tailwindo|py-1 px-2 leading-tight} text-xs ',
-        #     'lg' => '{tailwindo|py-3 px-4 leading-tight} text-xl',
-        # ] as bt_media => tw_classes) {
-        #     items['btn-'.bt_media] = tw_classes;
-        #     items['btn-group-'.bt_media] = tw_classes;
-        # }
+        # for bt_media, tw_classes in [
+        #     ('sm', '{tailwindo|py-1 px-2 leading-tight} text-xs '),
+        #     ('lg', '{tailwindo|py-3 px-4 leading-tight} text-xl'),
+        # ]:
+        #     items[f'btn-{bt_media}'] = tw_classes
+        #     items[f'btn-group-{bt_media}'] = tw_classes
 
         colors = [
             ("primary", "bg-blue-600 text-white hover:bg-blue-600"),
@@ -551,18 +545,20 @@ class BootstrapFramework:
             ("dark", "bg-gray-900 text-white hover:bg-gray-900"),
         ]
 
+        # def _replace(m):
+        #     if m[1].find('bg-') != -1:
+        #         color = m[1].replace('bg-', '')
+        #         return f'text-{color} border-{color} hover:bg-{color} hover:text-white'
+        #      else:
+        #          return 'bg-white'
+        #
         # for bt_color, tw_color in colors:
         #     items[f'btn-{bt_color}'] = tw_color # TODO XXX Below XXX
-        #     items[f'btn-outline-{bt_color}'] = preg_replace_callback('/(?<!hover:)(text-[^\s]+|bg-[^\s]+)/i', function (m) {
-        #         if (strpos(m[1], 'bg-') !== false) {
-        #             color = m[1].replace('bg-', '')
-
-        #             return 'text-'.color.' border-'.color.' hover:bg-'.color.' hover:text-white';
-        #         } else {
-        #             return 'bg-white';
-        #         }
-        #     }, tw_color);
-        # }
+        #     items[f'btn-outline-{bt_color}'] = re.sub(
+        #           r'(?P<!hover:)(text-[^\s]+|bg-[^\s]+)', 
+        #           _replace, 
+        #           tw_color
+        #           )
 
         return items
 
@@ -645,12 +641,11 @@ class BootstrapFramework:
 
         items = {
             "list-group": "flex flex-col pl-0 mb-0 border rounded border-gray-300",
-            "list-group-item-action": "w-fill",
+            "list-group-item-action": "w-full",
             "list-group-item": "relative block py-3 px-6 -mb-px border border-r-0 border-l-0 border-gray-300 no-underline",
             "list-group-flush": "",
         }
 
-        # TODO
         for bt_color, tw_color in self._colors.items():
             if bt_color == "dark":
                 items[f"list-group-item-{bt_color}"] = "text-white bg-gray-700"
@@ -664,7 +659,6 @@ class BootstrapFramework:
         return items
 
     def modals(self):
-        # TODO
         return defaultdict()
 
     def navs(self):
@@ -701,7 +695,7 @@ class BootstrapFramework:
         items[
             "navbar"
         ] = "relative flex flex-wrap items-center content-between py-3 px-4"
-        items["navbar-brand"] = "inline-block pt-1 pb-1 mr-4 text-lg whitespace-no-wrap"
+        items["navbar-brand"] = "inline-block pt-1 pb-1 mr-4 text-lg whitespace-nowrap"
         items["navbar-nav"] = "flex flex-wrap list-reset pl-0 mb-0"
         items["navbar-text"] = "inline-block pt-2 pb-2"
         items["navbar-dark"] = "text-white"

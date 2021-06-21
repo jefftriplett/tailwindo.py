@@ -4,7 +4,7 @@ from src.converter import Converter
 
 class TestText(unittest.TestCase):
     def setUp(self):
-        self.converter = Converter(classesOnly=True)
+        self.converter = Converter(classes_only=True)
 
     def test_converts_text_with_breakpoint(self):
         self.assertEqual(

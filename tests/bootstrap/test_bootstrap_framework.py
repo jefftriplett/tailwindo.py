@@ -15,7 +15,6 @@ class TestBootstrapFramework(unittest.TestCase):
             for search, replace in item.items():
                 if "--" in search:
                     match_array.append(search)
-        print(match_array)
         return self.assertEqual(match_array, [])
 
 

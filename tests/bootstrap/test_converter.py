@@ -4,7 +4,7 @@ from src.converter import Converter
 
 class TestConverter(unittest.TestCase):
     def setUp(self):
-        self.class_only = Converter(classesOnly=True)
+        self.class_only = Converter(classes_only=True)
         self.converter = Converter()
 
     def test_it_returns_output(self):

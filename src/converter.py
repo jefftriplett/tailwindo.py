@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 from .framework.bootstrap_framework import BootstrapFramework
 
 
@@ -24,7 +25,7 @@ class Converter:
     def set_content(self, content: str):
         self.given_content = content
         self.last_searches = []
-        self.components = []
+        self.components = defaultdict(str)
         return self
 
     def set_framework(self, framework: str):
@@ -42,16 +43,16 @@ class Converter:
         self.is_css_classes_only = value
         return self
 
-    # * The prefix option allows you to add a custom prefix to all of
-    # Tailwind's generated utility classes. This can be really useful when
-    # layering Tailwind on top of existing CSS where there might be naming
-    # conflicts.
-    # *
-    # * @param string $prefix
-    # *
-    # * @return Converter
-
     def set_prefix(self, prefix: str):
+        """
+        The prefix option allows you to add a custom prefix to all of
+        Tailwind's generated utility classes. This can be really useful when
+        layering Tailwind on top of existing CSS where there might be naming
+        conflicts.
+        
+        :param prefix:
+        :return Converter
+        """
         prefix = prefix.strip()
         if prefix:
             self.prefix = prefix
@@ -75,8 +76,7 @@ class Converter:
         if not self.generate_components:
             return result
 
-        # TODO
-        for selector, classes in self.components:
+        for selector, classes in self.components.items():
             if selector == classes:
                 continue
 
@@ -93,6 +93,13 @@ class Converter:
     # * search for a word in the last searches.
     # */
     def _is_in_last_searches(self, search_for: str, limit: int = 0) -> bool:
+        """
+        Search for a word in the last searches
+
+        :param search_for:
+        :param limit:
+        :return: Boolean if search_for is in last_searches 
+        """
         for i, search in enumerate(self.last_searches):
             if search_for in search:
                 return True
@@ -117,15 +124,15 @@ class Converter:
         self.last_searches = search
 
         if len(self.last_searches) >= 50:
-            # array_shift(self.last_searches)
+            # use deque.popleft() ?
             self.last_searches.pop(0)
 
-    # * Search the given content and replace.
-    # *
-    # * @param string          $search
-    # * @param string|\Closure $replace
-    # */
     def _search_and_replace(self, search, replace) -> None:
+        """
+        Search the given content and replace
+        :param search: 
+        :param replace:
+        """
         # if ($replace instanceof \Closure):
         #     callableReplace = \Closure::bind($replace, self, self::class)
         #     replace = callableReplace()
@@ -135,23 +142,19 @@ class Converter:
             if not self.is_css_classes_only
             else r"(?P<start>\s*)"
         )
-        # "(?<end>((?!\k<quotation>).)*\k<quotation>)"
         regex_end = (
             r"(?P<end>((?!(?P=quotation)).)*(?P=quotation))"
             if not self.is_css_classes_only
             else r"(?P<end>\s*)"
         )
 
-        # TODO OK?
-        # search = re.escape(search)
+        search = re.escape(search)
         current_substitute = 0
 
         # TODO
         while True:
-            # if (strpos($search, '{regex_string}') !== false || strpos($search, '{regex_number}') !== false) {
             if "{regex_string}" in search or "{regex_number}" in search:
                 current_substitute += 1
-                # for regex_name, regex_value in ['regex_string'=> '[a-z_a-Z0-9]+', 'regex_number' => '[0-9]+']:
                 for regex_name, regex_value in {
                     "regex_string": r"[a-zA-Z0-9]+",
                     "regex_number": r"[0-9]+",
@@ -180,8 +183,6 @@ class Converter:
             return
 
         def evaluator(match):
-
-            # print(match)
             _replace = re.sub(
                 "{regex_(string|number)_(\d+)}",
                 lambda m: match[f"regex_{m[1]}_{m[2]}"],
@@ -190,7 +191,7 @@ class Converter:
 
             if self.generate_components and match["given"] not in self.components:
                 self.components[match["given"]] = re.sub(
-                    "{tailwindo\|([^}]+)}", "\1", replace
+                    r"{tailwindo\|([^}]+)}", "\1", replace
                 )
 
             def fn(css_class):
@@ -217,18 +218,18 @@ class Converter:
 
             return _replace
 
-        # unecessary loop??
-        for match in matches.groups():
-            result = re.sub(
-                fr"(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d]))",
-                evaluator,
-                matches[0],
-            )
+        # unecessary loop?
+        # for match in matches.groups():
+        result = re.sub(
+            fr"(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d]))",
+            evaluator,
+            matches[0],
+        )
 
-            if matches[0] != result:
-                count = len(re.findall(r"{tailwindo\|.*?}", result))
-                if count and count > 1:
-                    result = re.sub(r"{tailwindo\|.*?}", "", result, count - 1)
+        if matches[0] != result:
+            count = len(re.findall(r"{tailwindo\|.*?}", result))
+            if count and count > 1:
+                result = re.sub(r"{tailwindo\|.*?}", "", result, count - 1)
 
-                self.given_content = self.given_content.replace(matches[0], result)
-                self._add_to_last_searches(search)
+            self.given_content = self.given_content.replace(matches[0], result)
+            self._add_to_last_searches(search)
