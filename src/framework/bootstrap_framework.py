@@ -53,21 +53,15 @@ class BootstrapFramework:
         return "Bootstrap"
 
     @property
-    def supported_version(self) -> list:
-        """
-         * latest versions of Bootstrap/Tailwind during the coding of this file.
-        """
-        return [
+    def supported_version(self) -> tuple:
+        """ Get supported Bootstrap/Tailwind version """
+        return (
             "4.4.1",  # bootstrap
             "1.4.0",  # tailwind
-        ]
-
-    """
-     * This is the default css classes to be added to your main css file for compatibility.
-    """
+        )
 
     def default_css(self) -> dict:
-
+        """ Default css classes to be added to your main css file. """
         return {
             # https://getbootstrap.com/docs/4.4/content/reboot/
             "h1": "",
@@ -80,10 +74,8 @@ class BootstrapFramework:
             "p": "",
         }
 
-    def get(self):  #  -> Generator[]
-        """
-        .get all convertible items.
-        """
+    def get(self):  # -> Generator[]
+        """ .get all convertible items.  """
         for component in [
             self.general(),
             self.grid(),
