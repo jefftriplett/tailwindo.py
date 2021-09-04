@@ -1,9 +1,9 @@
 *.swp
 ref
-*.php
 __pycache__
 example
 todo.*
 coverage/
 htmlcov/
 .coverage
+profile.conf

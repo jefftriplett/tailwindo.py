@@ -127,9 +127,6 @@ class Converter:
         :param search: 
         :param replace:
         """
-        # if ($replace instanceof \Closure):
-        #     callableReplace = \Closure::bind($replace, self, self::class)
-        #     replace = callableReplace()
 
         regex_start = (
             r"(?P<start>class(?:Name)?\s*=\s*(?P<quotation>[\"'])((?!(?P=quotation)).)*)"
@@ -168,10 +165,8 @@ class Converter:
                     )
             break
 
-        matches = re.search(
-            fr"{regex_start}(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d])){regex_end}",
-            self.given_content,
-        )
+        pattern = re.compile(fr"{regex_start}(?P<given>(?<![\-_.\w\d]){search}(?![\-_.\w\d])){regex_end}")
+        matches = pattern.search(self.given_content)
         if not matches:
             return
 

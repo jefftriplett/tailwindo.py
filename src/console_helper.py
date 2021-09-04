@@ -136,8 +136,7 @@ class ConsoleHelper:
     def _write_components_to_file(self, code, path):
         css_file_path = f"{path}/tailwindo-components.css"
         with open(css_file_path, "a") as f:
-            f.write(code)
-            f.write("\n")
+            f.write(f"{code}\n")
 
     # protected
     def _new_components_file(self, path):
