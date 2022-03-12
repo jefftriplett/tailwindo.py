@@ -20,16 +20,16 @@ class ConsoleHelper:
             framework=settings["framework"],
         )
 
-    def folder_convert(self, folder_path: str):
+    def folder_convert(self, f_path: str):
         framework_version, tailwind_version = self.converter.framework.supported_version
-        folder_path = Path(folder_path)
+        folder_path = Path(f_path)
 
         print(
             f"{Colors.OKBLUE}Converting Folder"
             + (" (extracted to tailwindo-components.css)" if self.components else "")
             + f":{Colors.ENDC} "
             + folder_path.resolve().name
-        )
+            )
         print(
             f"{Colors.OKGREEN}Converting from{Colors.ENDC} "
             + self.converter.framework.name

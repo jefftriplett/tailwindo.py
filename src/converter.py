@@ -73,18 +73,17 @@ class Converter:
         return self.given_content
 
     def get_components(self) -> str:
-        result = ""
+        result = []
         if not self.generate_components:
-            return result
+            return ""
 
         for selector, classes in self.components.items():
             if selector == classes:
                 continue
 
-            # improve??
-            result += "".join([".", selector, "{\n\t@apply ", classes, ";\n}\n"])
+            result.append("".join([".", selector, "{\n\t@apply ", classes, ";\n}\n"]))
 
-        return result
+        return "".join(result)
 
     def _is_in_last_searches(self, search_for: str, limit: int = 0) -> bool:
         """
